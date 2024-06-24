@@ -1,12 +1,12 @@
 import InputRadio from "./InputRadio";
 
-function LanguageKnown({ languageKnown, updateFormData }) {
+function LanguageKnown({ languageKnown, languageKnownError, updateFormData }) {
   let languages = Object.keys(languageKnown);
 
   function handleChange(event) {
-    const {name, value, checked} = event.target;
-    
-    let newLanguageKnown = {...languageKnown};
+    const { name, value, checked } = event.target;
+
+    let newLanguageKnown = { ...languageKnown };
 
     const [lang, skill] = name.split("_");
 
@@ -22,7 +22,7 @@ function LanguageKnown({ languageKnown, updateFormData }) {
       };
     }
 
-    updateFormData({languageKnown: newLanguageKnown})
+    updateFormData({ languageKnown: newLanguageKnown })
   }
 
   return (
@@ -43,7 +43,7 @@ function LanguageKnown({ languageKnown, updateFormData }) {
 
             {["read", "write", "speak"].map((skill) => (
               <InputRadio
-              key={skill}
+                key={skill}
                 type="checkbox"
                 name={`${language}_${skill}`}
                 id={`${language}_${skill}`}
@@ -51,9 +51,16 @@ function LanguageKnown({ languageKnown, updateFormData }) {
                 label={skill}
                 value={skill}
                 checked={languageKnown[language].skills[skill]}
+                disabled={!languageKnown[language].selected}
                 handleChange={handleChange}
               />
             ))}
+
+            <div className={`${languageKnownError[language].errorStatus ? '' : 'hidden'}`}>
+              <span className="text-red-600">
+                {languageKnownError[language].title}
+              </span>
+            </div>
           </div>
         );
       })}

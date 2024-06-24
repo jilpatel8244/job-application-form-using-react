@@ -1,12 +1,12 @@
 import InputRadio from "./InputRadio";
 
-function TechnologyKnown({ technologyKnown, updateFormData }) {
+function TechnologyKnown({ technologyKnown, technologyKnownError, updateFormData }) {
   let technologies = Object.keys(technologyKnown);
 
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
 
-    let newTechnologyKnown = {...technologyKnown};
+    let newTechnologyKnown = { ...technologyKnown };
 
     if (type === "checkbox") {
       newTechnologyKnown[name].selected = checked;
@@ -15,14 +15,15 @@ function TechnologyKnown({ technologyKnown, updateFormData }) {
       newTechnologyKnown[tech].level = level;
     }
 
-    updateFormData({technologyKnown: newTechnologyKnown});
+    updateFormData({ technologyKnown: newTechnologyKnown });
   }
 
   return (
     <div>
       {technologies.map((technology) => {
         return (
-          <div key={technology} className="flex items-center p-3 gap-3">
+          <div key={technology} className="flex flex-col">
+            <div className="flex items-center p-3 gap-3">
             <InputRadio
               type="checkbox"
               name={technology}
@@ -44,12 +45,25 @@ function TechnologyKnown({ technologyKnown, updateFormData }) {
                 label={level}
                 value={level}
                 checked={technologyKnown[technology].level === level}
+                disabled={!technologyKnown[technology].selected}
                 handleChange={handleChange}
               />
             ))}
+            </div>
+            <div className={`${technologyKnownError[technology].errorStatus ? '' : 'hidden'}`}>
+              <span className="text-red-600">
+                {technologyKnownError[technology].title}
+              </span>
+            </div>
           </div>
         );
       })}
+
+      {/* <div className={`${errorObj?.errorStatus ? '' : 'hidden'}`}>
+        <span className="text-red-600">
+          {errorObj?.title}
+        </span>
+      </div> */}
     </div>
   );
 }

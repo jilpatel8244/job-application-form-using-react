@@ -7,89 +7,251 @@ import LanguageKnown from "./Step4-LanguageKnown";
 import WorkExperience from "./Step5-WorkExperience";
 import ReferenceDetails from "./Step6-ReferenceDetails";
 import Preferences from "./Step7-Preferences";
-import { v4 as uuidv4 } from 'uuid';
-import { languageKnown, stepDetails, technologyKnown } from "../helper/data";
+import { initialFormData, initialFormErrorData, languageKnown, stepDetails } from "../helper/data";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
+import formFields from "../helper/formValidationData";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [localStorageValue, setLocalStorageValue] = useLocalStorage('users');
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    id: uuidv4(),
-    basicDetails: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-      designation: "",
-      gender: "",
-      relationshipStatus: "single",
-      state: "gujarat",
-      city: "surat",
-      dob: "",
-    },
-    educationDetails: {
-      ssc: {
-        boardName: "",
-        passingYear: "",
-        percentage: "",
-      },
-      hsc: {
-        boardName: "",
-        passingYear: "",
-        percentage: "",
-      },
-      bechlor: {
-        courseName: "",
-        univercityName: "",
-        passingYear: "",
-        percentage: "",
-      },
-      master: {
-        courseName: "",
-        univercityName: "",
-        passingYear: "",
-        percentage: "",
-      },
-    },
-    technologyKnown: technologyKnown,
-    languageKnown: languageKnown,
-    workExperiences: [
-      {
-        id: "1",
-        companyName: "",
-        designation: "",
-        from: "",
-        to: "",
-      },
-    ],
-    referenceDetails: [
-      {
-        id: "1",
-        name: "",
-        phoneNumber: "",
-        relation: "",
-      },
-    ],
-    preferences: {
-      currentCTC: "",
-      expectedCTC: "",
-      noticePeriod: "",
-      department: "",
-      preferedLocations: [],
-    },
-  });
+  const [formData, setFormData] = useState(initialFormData);
+  const [formErrorData, setFormErrorData] = useState(initialFormErrorData)
+  const [validateOnChange, setValidateOnChange] = useState(false);
 
   useEffect(() => {
     if (localStorageValue?.length) {
       setFormData(...localStorageValue);
     }
-    console.log(formData);
   }, [localStorageValue])
 
-  
+  useEffect(() => {
+    if (validateOnChange) {
+      switch (currentStep) {
+        case 1:
+          validateBasicDetails()
+          break;
+        case 2:
+          validateEducationDetails()
+          break;
+        case 3:
+          validateTechnologyKnown()
+          break;
+        case 4:
+          validateLanguageKnown()
+          break;
+        case 5:
+          validateWorkExperience()
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, [formData]);
+
+  function validateBasicDetails() {
+    let validate = true;
+    formFields.forEach((field) => {
+      let value = formData.basicDetails[field.name];
+
+      let errorStatus = false;
+      let fieldName = field.name;
+      let errorTitle;
+
+      field.rules.forEach((rule) => {
+        if (
+          rule === "required" &&
+          (typeof value === "object" ? !value?.length : !value?.trim().length)
+        ) {
+          validate = false;
+          errorStatus = true;
+          fieldName = field.name;
+          errorTitle = "field is required !";
+        }
+      });
+      setFormErrorData((prevData) => {
+        return {
+          ...prevData,
+          basicDetails: {
+            ...prevData.basicDetails,
+            [fieldName]: {
+              errorStatus: errorStatus,
+              title: errorTitle
+            }
+          }
+        };
+      });
+    });
+
+    return validate;
+  }
+
+  function validateEducationDetails() {
+    let validate = true;
+
+    for (const [key, value] of Object.entries(formData.educationDetails)) {
+
+      let filteredArr = Object.entries(value).filter((childElement) => {
+        let [key, value] = childElement;
+
+        return !value
+      })
+
+      let errorStatus = false;
+      let title = "";
+
+      if (filteredArr.length !== 0 && filteredArr.length !== Object.entries(value).length) {
+        validate = false;
+        filteredArr.forEach((element) => {
+          if (!element[1]) {
+            errorStatus = true;
+            title = "its required !"
+            setFormErrorData((prevData) => {
+              return {
+                ...prevData,
+                educationDetails: {
+                  ...prevData.educationDetails,
+                  [key]: {
+                    ...prevData.educationDetails[key],
+                    [element[0]]: {
+                      errorStatus: errorStatus,
+                      title: title
+                    }
+                  }
+                }
+              }
+            })
+          }
+        })
+      }
+    }
+
+    return validate;
+  }
+
+  function validateTechnologyKnown() {
+    let validate = true;
+
+    console.log(formData.technologyKnown);
+
+    for (const [key, value] of Object.entries(formData.technologyKnown)) {
+      setFormErrorData((prevData) => {
+        return {
+          ...prevData,
+          technologyKnown: {
+            ...prevData.technologyKnown,
+            [key]: {
+              errorStatus: false,
+              title: ""
+            }
+          }
+        }
+      })
+
+      if (value.selected) {
+        if (!value.level) {
+          validate = false;
+          setFormErrorData((prevData) => {
+            return {
+              ...prevData,
+              technologyKnown: {
+                ...prevData.technologyKnown,
+                [key]: {
+                  errorStatus: true,
+                  title: "please select level"
+                }
+              }
+            }
+          })
+        }
+      }
+    }
+
+    return validate;
+  }
+
+  function validateLanguageKnown() {
+    let validate = true;
+
+    for (const [key, value] of Object.entries(formData.languageKnown)) {
+      let errorStatus = false;
+      let title = "";
+      if (value.selected) {
+        let atleastOneSelected = false;
+        for (const [childKey, childValue] of Object.entries(value)) {
+          if (childValue.read || childValue.write || childValue.speak) {
+            atleastOneSelected = true;
+          }
+        }
+        if (!atleastOneSelected) {
+          validate = false;
+          errorStatus = true;
+          title = "please selct one"
+        }
+      }
+      setFormErrorData((prevData) => {
+        return {
+          ...prevData,
+          languageKnown: {
+            ...prevData.languageKnown,
+            [key]: {
+              errorStatus: errorStatus,
+              title: title
+            }
+          }
+        }
+      })
+    }
+
+    return validate;
+  }
+
+  function validateWorkExperience() {
+    let validate = true;
+
+    console.log(formData.workExperiences);
+
+    for (const [key, value] of Object.entries(formData.workExperiences)) {
+      
+    }
+
+    return false;
+  }
+
+  function nextBtnHandler() {
+    setValidateOnChange(true);
+
+    let validateStatus = true;
+    switch (currentStep) {
+      case 1:
+        validateStatus = validateBasicDetails()
+        break;
+      case 2:
+        validateStatus = validateEducationDetails()
+        break;
+      case 3:
+        validateStatus = validateTechnologyKnown()
+        break;
+      case 4:
+        validateStatus = validateLanguageKnown()
+        break;
+      case 5:
+        validateStatus = validateWorkExperience()
+
+      default:
+        break;
+    }
+    if (validateStatus) {
+      setValidateOnChange(false);
+      setCurrentStep(currentStep + 1);
+    }
+  }
+
+  function prevBtnHandler() {
+    setCurrentStep(currentStep - 1);
+  }
 
   function updateFormData(stepData) {
     setFormData((prevData) => {
@@ -127,7 +289,7 @@ function JobForm() {
 
     let updatedUsers = users.map((user) => {
       if (user.id === formData.id) {
-        user = {...formData}
+        user = { ...formData }
       }
       return user;
     });
@@ -144,6 +306,7 @@ function JobForm() {
       component = (
         <BasicDetails
           basicDetails={formData.basicDetails}
+          basicDetailsError={formErrorData.basicDetails}
           updateFormData={updateFormData}
         />
       );
@@ -152,6 +315,7 @@ function JobForm() {
       component = (
         <EducationDetails
           educationDetails={formData.educationDetails}
+          educationDetailsError={formErrorData.educationDetails}
           updateFormData={updateFormData}
         />
       );
@@ -160,6 +324,7 @@ function JobForm() {
       component = (
         <TechnologyKnown
           technologyKnown={formData.technologyKnown}
+          technologyKnownError={formErrorData.technologyKnown}
           updateFormData={updateFormData}
         />
       );
@@ -168,6 +333,7 @@ function JobForm() {
       component = (
         <LanguageKnown
           languageKnown={formData.languageKnown}
+          languageKnownError={formErrorData.languageKnown}
           updateFormData={updateFormData}
         />
       );
@@ -176,6 +342,8 @@ function JobForm() {
       component = (
         <WorkExperience
           workExperiences={formData.workExperiences}
+          workExperiencesError={formErrorData.workExperiences}
+          setFormErrorData={setFormErrorData}
           updateFormData={updateFormData}
         />
       );
@@ -219,20 +387,16 @@ function JobForm() {
               <button
                 type="button"
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                onClick={() => {
-                  setCurrentStep(currentStep - 1);
-                }}
+                onClick={prevBtnHandler}
               >
                 Prev
               </button>
             )}
             {currentStep < stepDetails.length && (
               <button
-              type="button"
+                type="button"
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                onClick={() => {
-                  setCurrentStep(currentStep + 1);
-                }}
+                onClick={nextBtnHandler}
               >
                 Next
               </button>

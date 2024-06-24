@@ -1,11 +1,11 @@
 import InputText from "./InputText";
 import { v4 as uuidv4 } from 'uuid';
 
-function WorkExperience({ workExperiences, updateFormData }) {
+function WorkExperience({ workExperiences, workExperiencesError, setFormErrorData, updateFormData }) {
   function handleChange(event) {
     const { name, value, id } = event.target;
     const specificObjId = id.split("_")[1];
-    
+
     const updatedWorkExperiences = workExperiences.map(workExperience => {
       if (workExperience.id === specificObjId) {
         return { ...workExperience, [name]: value };
@@ -16,15 +16,45 @@ function WorkExperience({ workExperiences, updateFormData }) {
   }
 
   function addAnotherExperience() {
+    let newGeneratedId = uuidv4();
     let newWorkExperience = {
-      id: uuidv4(),
+      id: newGeneratedId,
       companyName: "",
       designation: "",
       from: "",
       to: "",
     };
 
-    updateFormData({workExperiences: [...workExperiences, newWorkExperience]});
+    let newErrorObj = {
+      id: newGeneratedId,
+      companyName: {
+        errorStatus: false,
+        title: ""
+      },
+      designation: {
+        errorStatus: false,
+        title: ""
+      },
+      from: {
+        errorStatus: false,
+        title: ""
+      },
+      to: {
+        errorStatus: false,
+        title: ""
+      },
+    }
+
+    updateFormData({ workExperiences: [...workExperiences, newWorkExperience] });
+    setFormErrorData((prevData) => {
+      return {
+        ...prevData,
+        workExperiences: {
+          ...prevData.workExperience,
+          newErrorObj
+        }
+      }
+    })
   }
 
   function deleteExperience(id) {
@@ -32,8 +62,8 @@ function WorkExperience({ workExperiences, updateFormData }) {
       let filterdWorkExperience = workExperiences.filter((workExperience) => {
         return workExperience.id !== id
       });
-      
-      updateFormData({workExperiences: [...filterdWorkExperience]});
+
+      updateFormData({ workExperiences: [...filterdWorkExperience] });
     }
   }
 
@@ -47,7 +77,7 @@ function WorkExperience({ workExperiences, updateFormData }) {
         Add
       </button>
       {workExperiences.map((workExperience) => {
-        return <WorkExperienceLine key={workExperience.id} {...workExperience} handleChange={handleChange} deleteExperience={deleteExperience} />;
+        return <WorkExperienceLine key={workExperience.id} {...workExperience} workExperiencesError={workExperiencesError} handleChange={handleChange} deleteExperience={deleteExperience} />;
       })}
     </div>
   );
@@ -55,7 +85,7 @@ function WorkExperience({ workExperiences, updateFormData }) {
 
 export default WorkExperience;
 
-function WorkExperienceLine({ id, companyName, designation, from, to, handleChange, deleteExperience }) {
+function WorkExperienceLine({ id, companyName, designation, from, to, workExperiencesError, handleChange, deleteExperience }) {
   const inputFields = [
     { name: "companyName", label: "Company Name", type: "text" },
     { name: "designation", label: "Designation", type: "text" },
@@ -76,6 +106,7 @@ function WorkExperienceLine({ id, companyName, designation, from, to, handleChan
             label={field.label}
             value={field.name === "companyName" ? companyName : field.name === "designation" ? designation : field.name === "from" ? from : to}
             handleChange={handleChange}
+            errorObj={workExperiencesError[field.name]}
           />
         </div>
       ))}

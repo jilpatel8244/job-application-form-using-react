@@ -1,6 +1,6 @@
 import InputText from "./InputText";
 
-function EducationDetails({ educationDetails, updateFormData }) {
+function EducationDetails({ educationDetails, educationDetailsError, updateFormData }) {
   function handleChange(event) {
     const {name, value} = event.target;
     const [level, field] = name.split("_");
@@ -33,6 +33,7 @@ function EducationDetails({ educationDetails, updateFormData }) {
                 label={field}
                 value={educationDetails[level][field]}
                 handleChange={handleChange}
+                errorObj={educationDetailsError[level][field]}
               />
             ))}
           </div>

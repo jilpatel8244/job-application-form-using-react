@@ -3,11 +3,11 @@ import InputRadio from "./InputRadio";
 import InputText from "./InputText";
 import SelectComponent from "./SelectComponent";
 
-function BasicDetails({ basicDetails, updateFormData }) {
-function handleChange(event) {
-  const {name, value} = event.target;
-  updateFormData({basicDetails: {...basicDetails, [name]: value}})
-}
+function BasicDetails({ basicDetails, basicDetailsError, updateFormData }) {
+  function handleChange(event) {
+    const { name, value } = event.target;
+    updateFormData({ basicDetails: { ...basicDetails, [name]: value } })
+  }
 
   return (
     <div className="max-w-[50%] w-[50%]">
@@ -21,6 +21,7 @@ function handleChange(event) {
           label="First Name"
           value={basicDetails.firstName}
           handleChange={handleChange}
+          errorObj={basicDetailsError.firstName}
         />
         <InputText
           type="text"
@@ -31,6 +32,7 @@ function handleChange(event) {
           label="Last Name"
           value={basicDetails.lastName}
           handleChange={handleChange}
+          errorObj={basicDetailsError.lastName}
         />
       </div>
       <InputText
@@ -42,6 +44,7 @@ function handleChange(event) {
         label="Email"
         value={basicDetails.email}
         handleChange={handleChange}
+        errorObj={basicDetailsError.email}
       />
       <div className="grid md:grid-cols-2 md:gap-6">
         <InputText
@@ -53,6 +56,7 @@ function handleChange(event) {
           label="Phone number (123-456-7890)"
           value={basicDetails.phoneNumber}
           handleChange={handleChange}
+          errorObj={basicDetailsError.phoneNumber}
         />
         <InputText
           type="text"
@@ -63,6 +67,7 @@ function handleChange(event) {
           label="Designation"
           value={basicDetails.designation}
           handleChange={handleChange}
+          errorObj={basicDetailsError.designation}
         />
       </div>
 
@@ -96,6 +101,11 @@ function handleChange(event) {
                 handleChange={handleChange}
               />
             </div>
+          </div>
+          <div className={`${basicDetailsError.gender.errorStatus ? '' : 'hidden'}`}>
+            <span className="text-red-600">
+              {basicDetailsError.gender.title}
+            </span>
           </div>
         </div>
         <SelectComponent
@@ -139,6 +149,7 @@ function handleChange(event) {
         label="Date Of Birth"
         value={basicDetails.dob}
         handleChange={handleChange}
+        errorObj={basicDetailsError.dob}
       />
     </div>
   );
