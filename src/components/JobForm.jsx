@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProgressBar from "./ProgressBar";
 import BasicDetails from "./Step1-BasicDetails";
 import EducationDetails from "./Step2-EducationalDetails";
@@ -9,9 +9,13 @@ import ReferenceDetails from "./Step6-ReferenceDetails";
 import Preferences from "./Step7-Preferences";
 import { v4 as uuidv4 } from 'uuid';
 import { languageKnown, stepDetails, technologyKnown } from "../helper/data";
+import useLocalStorage from "../hooks/useLocalStorage";
+import { useNavigate } from "react-router-dom";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [localStorageValue, setLocalStorageValue] = useLocalStorage('users');
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     id: uuidv4(),
     basicDetails: {
@@ -78,6 +82,15 @@ function JobForm() {
     },
   });
 
+  useEffect(() => {
+    if (localStorageValue?.length) {
+      setFormData(...localStorageValue);
+    }
+    console.log(formData);
+  }, [localStorageValue])
+
+  
+
   function updateFormData(stepData) {
     setFormData((prevData) => {
       return {
@@ -91,18 +104,37 @@ function JobForm() {
     event.preventDefault();
     console.log(formData);
 
-    let users = [];
-    if (localStorage.getItem(users)) {
-      console.log("hello ");
-      users = JSON.parse(localStorage.getItem(users));
-      users.push(formData);
+    let users = localStorage.getItem('users');
+
+    if (users) {
+      users = JSON.parse(localStorage.getItem('users'));
     } else {
-      console.log("hello 1");
-      users.push(formData);
+      users = [];
     }
+
+    users.push(formData);
     localStorage.setItem("users", JSON.stringify(users));
 
-    console.log();
+    console.log("user stored successfully");
+    navigate('/list-users');
+  }
+
+  function handleUpdate(event) {
+    event.preventDefault();
+    console.log(formData);
+
+    let users = JSON.parse(localStorage.getItem('users'));
+
+    let updatedUsers = users.map((user) => {
+      if (user.id === formData.id) {
+        user = {...formData}
+      }
+      return user;
+    });
+
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    console.log("user updated successfully");
+    navigate('/list-users');
   }
 
   let component;
@@ -178,7 +210,7 @@ function JobForm() {
       <div className="w-full">
         <form
           onSubmit={(e) => {
-            handleSubmit(e);
+            localStorageValue.length ? handleUpdate(e) : handleSubmit(e)
           }}
         >
           <div className="flex justify-center my-5">{component}</div>
