@@ -1,5 +1,4 @@
 function InputText({ type, name, id, className, placeholder, label, value, handleChange, errorObj }) {
-  console.log("error obj ", errorObj);
   return (
     <div className="mb-5">
       <label

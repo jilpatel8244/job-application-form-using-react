@@ -1,4 +1,4 @@
-function SelectComponent({ name, id, label, options, multiple = false, value, handleChange }) {
+function SelectComponent({ name, id, label, options, multiple = false, value, handleChange, errorObj = null }) {
   return (
     <div>
       <label
@@ -13,7 +13,7 @@ function SelectComponent({ name, id, label, options, multiple = false, value, ha
           id={id}
           multiple
           value={value}
-          onChange={(e) => {handleChange(e)}}
+          onChange={(e) => { handleChange(e) }}
           name={name}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
@@ -28,7 +28,7 @@ function SelectComponent({ name, id, label, options, multiple = false, value, ha
           id={id}
           name={name}
           value={value}
-          onChange={(e) => {handleChange(e)}}
+          onChange={(e) => { handleChange(e) }}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           {options.map((option) => (
@@ -38,6 +38,12 @@ function SelectComponent({ name, id, label, options, multiple = false, value, ha
           ))}
         </select>
       )}
+
+      <div className={`${errorObj?.errorStatus ? '' : 'hidden'}`}>
+        <span className="text-red-600">
+          {errorObj?.title}
+        </span>
+      </div>
     </div>
   );
 }

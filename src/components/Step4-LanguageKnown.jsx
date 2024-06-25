@@ -1,6 +1,6 @@
 import InputRadio from "./InputRadio";
 
-function LanguageKnown({ languageKnown, languageKnownError, updateFormData }) {
+function LanguageKnown({ languageKnown, languageKnownError, isAtleastOneLanguageSelected, updateFormData }) {
   let languages = Object.keys(languageKnown);
 
   function handleChange(event) {
@@ -64,6 +64,12 @@ function LanguageKnown({ languageKnown, languageKnownError, updateFormData }) {
           </div>
         );
       })}
+
+      <div className={`${!isAtleastOneLanguageSelected?.status ? '' : 'hidden'}`}>
+        <span className="text-red-600">
+          {isAtleastOneLanguageSelected?.title}
+        </span>
+      </div>
     </div>
   );
 }

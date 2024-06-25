@@ -1,11 +1,26 @@
-const formFields = [
-    { name: "firstName", rules: ["required"] },
-    { name: "lastName", rules: ["required"] },
+const formBasicDetailsFields = [
+    { name: "firstName", rules: ["required", "string"] },
+    { name: "lastName", rules: ["required", "string"] },
     { name: "email", rules: ["required", "email"] },
     { name: "phoneNumber", rules: ["required", "phone"] },
-    { name: "designation", rules: ["required"] },
+    { name: "designation", rules: ["required", "string"] },
     { name: "gender", rules: ["required"] },
     { name: "dob", rules: ["required"] }
+];
+
+const formPreferencesFields = [
+    { name: "currentCTC", rules: ["required", "number"] },
+    { name: "expectedCTC", rules: ["required", "number"] },
+    { name: "noticePeriod", rules: ["required", "number"] },
+    { name: "department", rules: ["required"] },
+    { name: "preferedLocations", rules: ["required"] },
+];
+
+const formReferenceFields = [
+    { name: "companyName", rules: ["string"] },
+    { name: "designation", rules: ["string"] },
+    { name: "from", rules: [] },
+    { name: "to", rules: [] }
 ];
 
 const validateEmail = (email) => {
@@ -22,6 +37,11 @@ const validatePassword = (password) => {
     return re.test(String(password));
 };
 
-export { validateEmail, validatePhone, validatePassword };
+const isNumber = (number) => {
+    return !isNaN(number)
+}
 
-export default formFields;
+const isString = value => typeof value === 'string' && /^[a-zA-Z]+$/.test(value);
+
+
+export { validateEmail, validatePhone, validatePassword, isNumber, isString, formReferenceFields, formBasicDetailsFields, formPreferencesFields };

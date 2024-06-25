@@ -10,7 +10,7 @@ import Preferences from "./Step7-Preferences";
 import { initialFormData, initialFormErrorData, languageKnown, stepDetails } from "../helper/data";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
-import formFields, { validateEmail, validatePhone } from "../helper/formValidationData";
+import { formBasicDetailsFields, formPreferencesFields, formReferenceFields, isNumber, isString, validateEmail, validatePhone } from "../helper/formValidationData";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -44,6 +44,12 @@ function JobForm() {
         case 5:
           validateWorkExperience()
           break;
+        case 6:
+          validateReferenceDetails()
+          break;
+        case 7:
+          validatePreferences()
+          break;
 
         default:
           break;
@@ -53,7 +59,7 @@ function JobForm() {
 
   function validateBasicDetails() {
     let validate = true;
-    formFields.forEach((field) => {
+    formBasicDetailsFields.forEach((field) => {
       let value = formData.basicDetails[field.name];
 
       let errorStatus = false;
@@ -67,22 +73,25 @@ function JobForm() {
         ) {
           validate = false;
           errorStatus = true;
-          fieldName = field.name;
           errorTitle = "field is required !";
         }
 
         if (rule === "email" && value && !validateEmail(value)) {
           validate = false;
           errorStatus = true;
-          fieldName = field.name;
           errorTitle = `Please enter valid ${field.name} !`;
         }
 
         if (rule === "phone" && value && !validatePhone(value)) {
           validate = false;
           errorStatus = true;
-          fieldName = field.name;
           errorTitle = `Please enter valid ${field.name} !`;
+        }
+
+        if (rule === "string" && value && !isString(value)) {
+          validate = false;
+          errorStatus = true;
+          errorTitle = `${field.name} must be a string!`;
         }
       });
       setFormErrorData((prevData) => {
@@ -99,6 +108,8 @@ function JobForm() {
       });
     });
 
+    console.log(validate);
+
     return validate;
   }
 
@@ -109,6 +120,8 @@ function JobForm() {
 
       let filteredArr = Object.entries(value).filter((childElement) => {
         let [key, value] = childElement;
+
+        console.log(value);
 
         return !value
       })
@@ -122,21 +135,78 @@ function JobForm() {
           if (!element[1]) {
             errorStatus = true;
             title = "its required !"
-            setFormErrorData((prevData) => {
-              return {
-                ...prevData,
-                educationDetails: {
-                  ...prevData.educationDetails,
-                  [key]: {
-                    ...prevData.educationDetails[key],
-                    [element[0]]: {
-                      errorStatus: errorStatus,
-                      title: title
-                    }
+          }
+          setFormErrorData((prevData) => {
+            return {
+              ...prevData,
+              educationDetails: {
+                ...prevData.educationDetails,
+                [key]: {
+                  ...prevData.educationDetails[key],
+                  [element[0]]: {
+                    errorStatus: errorStatus,
+                    title: title
                   }
                 }
               }
-            })
+            }
+          })
+        })
+      }
+    }
+
+
+
+    return validate;
+  }
+
+  function validateTechnologyKnown() {
+    let validate = true;
+
+    let atleastOneSelected = false;
+    for (const [key, value] of Object.entries(formData.technologyKnown)) {
+      if (value.selected) {
+        atleastOneSelected = true;
+      }
+    }
+
+    let status = true;
+    let title = "";
+
+    if (!atleastOneSelected) {
+      validate = false;
+      status = false;
+      title = "Please selct atleast one technology"
+    }
+    setFormErrorData((prevData) => {
+      return {
+        ...prevData,
+        isAtleastOneTechSelected: {
+          status: status,
+          title: title
+        }
+      }
+    })
+
+    for (const [key, value] of Object.entries(formData.technologyKnown)) {
+      if (value.selected) {
+        let errorStatus = false;
+        let title = "";
+        if (!value.level) {
+          validate = false;
+          errorStatus = true;
+          title = "please select level"
+        }
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            technologyKnown: {
+              ...prevData.technologyKnown,
+              [key]: {
+                errorStatus: errorStatus,
+                title: title
+              }
+            }
           }
         })
       }
@@ -145,47 +215,34 @@ function JobForm() {
     return validate;
   }
 
-  function validateTechnologyKnown() {
+  function validateLanguageKnown() {
+    console.log(formData.languageKnown);
     let validate = true;
 
-    for (const [key, value] of Object.entries(formData.technologyKnown)) {
-      setFormErrorData((prevData) => {
-        return {
-          ...prevData,
-          technologyKnown: {
-            ...prevData.technologyKnown,
-            [key]: {
-              errorStatus: false,
-              title: ""
-            }
-          }
-        }
-      })
-
+    let atleastOneSelected = false;
+    for (const [key, value] of Object.entries(formData.languageKnown)) {
       if (value.selected) {
-        if (!value.level) {
-          validate = false;
-          setFormErrorData((prevData) => {
-            return {
-              ...prevData,
-              technologyKnown: {
-                ...prevData.technologyKnown,
-                [key]: {
-                  errorStatus: true,
-                  title: "please select level"
-                }
-              }
-            }
-          })
-        }
+        atleastOneSelected = true;
       }
     }
 
-    return validate;
-  }
+    let status = true;
+    let title = "";
 
-  function validateLanguageKnown() {
-    let validate = true;
+    if (!atleastOneSelected) {
+      validate = false;
+      status = false;
+      title = "Please selct atleast one language"
+    }
+    setFormErrorData((prevData) => {
+      return {
+        ...prevData,
+        isAtleastOneLanguageSelected: {
+          status: status,
+          title: title
+        }
+      }
+    })
 
     for (const [key, value] of Object.entries(formData.languageKnown)) {
       let errorStatus = false;
@@ -223,7 +280,6 @@ function JobForm() {
   function validateWorkExperience() {
     let validate = true;
 
-
     formData.workExperiences.forEach((workExperience) => {
       let count = 0;
       let id;
@@ -236,23 +292,154 @@ function JobForm() {
         }
       }
 
-      
       if (count !== Object.keys(workExperience).length && count !== 1) {
         validate = false;
         for (const [key, value] of Object.entries(workExperience)) {
+          let newErrObj;
           if (!value) {
+            newErrObj = {
+              [`${key}_${id}`]: {
+                errorStatus: true,
+                title: "required"
+              }
+            }
+          } else {
+            newErrObj = {
+              [`${key}_${id}`]: {
+                errorStatus: false,
+                title: ""
+              }
+            }
+          }
+          setFormErrorData((prevData) => {
+            return {
+              ...prevData,
+              workExperiences: {
+                ...prevData.workExperiences,
+                ...newErrObj
+              }
+            }
+          })
+        }
+        console.log(count);
+      } else {
+        for (const [key, value] of Object.entries(workExperience)) {
+          if (Object.keys(formErrorData.workExperiences).includes(`${key}_${id}`)) {
+            let newErrObj = {
+              [`${key}_${id}`]: {
+                errorStatus: false,
+                title: ""
+              }
+            }
             setFormErrorData((prevData) => {
               return {
                 ...prevData,
                 workExperiences: {
                   ...prevData.workExperiences,
-                  [`${id}`]: {
-                    ...prevData.workExperiences[id],
-                    [`${key}`]: {
-                      errorStatus: true,
-                      title: "its required"
-                    }
-                  }
+                  ...newErrObj
+                }
+              }
+            })
+          }
+        }
+      }
+
+        if (workExperience.from && new Date(workExperience.from) > new Date()) {
+          validate = false;          
+          setFormErrorData((prevData) => {
+            return {
+              ...prevData,
+              workExperiences: {
+                ...prevData.workExperiences,
+                [`from_${id}`]: {
+                  errorStatus: true,
+                  title: "from date must not greater than today"
+                }
+              }
+            }
+          })
+        }
+        if ((workExperience.from && workExperience.to) && (new Date(workExperience.from) > new Date(workExperience.to))) {
+          validate = false;          
+          setFormErrorData((prevData) => {
+            return {
+              ...prevData,
+              workExperiences: {
+                ...prevData.workExperiences,
+                [`to_${id}`]: {
+                  errorStatus: true,
+                  title: "to date must not greater than from"
+                }
+              }
+            }
+          })
+        }
+      
+    })
+
+    return validate;
+  }
+
+  function validateReferenceDetails() {
+    let validate = true;
+
+    formData.referenceDetails.forEach((singleReferenceDetail) => {
+      let count = 0;
+      let id;
+      for (const [key, value] of Object.entries(singleReferenceDetail)) {
+        if (key === "id") {
+          id = value;
+        }
+        if (value) {
+          count = count + 1;
+        }
+      }
+
+      if (count !== Object.keys(singleReferenceDetail).length && count !== 1) {
+        validate = false;
+        for (const [key, value] of Object.entries(singleReferenceDetail)) {
+          let newErrObj;
+          if (!value) {
+            newErrObj = {
+              [`${key}_${id}`]: {
+                errorStatus: true,
+                title: "required"
+              }
+            }
+          } else {
+            newErrObj = {
+              [`${key}_${id}`]: {
+                errorStatus: false,
+                title: ""
+              }
+            }
+          }
+          setFormErrorData((prevData) => {
+            return {
+              ...prevData,
+              referenceDetails: {
+                ...prevData.referenceDetails,
+                ...newErrObj
+              }
+            }
+          })
+        }
+        console.log(count);
+      } else {
+        for (const [key, value] of Object.entries(singleReferenceDetail)) {
+          if (Object.keys(formErrorData.referenceDetails).includes(`${key}_${id}`)) {
+            let newErrObj = {
+              [`${key}_${id}`]: {
+                errorStatus: false,
+                title: ""
+              }
+            }
+            setFormErrorData((prevData) => {
+              return {
+                ...prevData,
+                referenceDetails: {
+                  ...prevData.referenceDetails,
+                  ...newErrObj
                 }
               }
             })
@@ -261,6 +448,50 @@ function JobForm() {
       }
     })
 
+    return validate;
+  }
+
+  function validatePreferences() {
+    let validate = true;
+
+    formPreferencesFields.forEach((field) => {
+      let value = formData.preferences[field.name];
+
+      let errorStatus = false;
+      let fieldName = field.name;
+      let errorTitle;
+
+      field.rules.forEach((rule) => {
+        if (
+          rule === "required" &&
+          (typeof value === "object" ? !value?.length : !value?.trim().length)
+        ) {
+          validate = false;
+          errorStatus = true;
+          errorTitle = "field is required !";
+        }
+
+        if (rule === "number" && value && !isNumber(value)) {
+          validate = false;
+          errorStatus = true;
+          errorTitle = `${field.name} must be a number`;
+        }
+      });
+      setFormErrorData((prevData) => {
+        return {
+          ...prevData,
+          preferences: {
+            ...prevData.preferences,
+            [fieldName]: {
+              errorStatus: errorStatus,
+              title: errorTitle
+            }
+          }
+        };
+      });
+    });
+
+    console.log(validate);
     return validate;
   }
 
@@ -283,14 +514,23 @@ function JobForm() {
         break;
       case 5:
         validateStatus = validateWorkExperience()
+        break;
+      case 6:
+        validateStatus = validateReferenceDetails()
+        break;
+      case 7:
+        validateStatus = validatePreferences()
+        break;
 
       default:
         break;
     }
+
     if (validateStatus) {
       setValidateOnChange(false);
       setCurrentStep(currentStep + 1);
     }
+
   }
 
   function prevBtnHandler() {
@@ -308,39 +548,50 @@ function JobForm() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    setValidateOnChange(true);
 
-    let users = localStorage.getItem('users');
+    if (validatePreferences()) {
+      setValidateOnChange(false);
 
-    if (users) {
-      users = JSON.parse(localStorage.getItem('users'));
-    } else {
-      users = [];
+      console.log(formData);
+      let users = localStorage.getItem('users');
+
+      if (users) {
+        users = JSON.parse(localStorage.getItem('users'));
+      } else {
+        users = [];
+      }
+
+      users.push(formData);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      console.log("user stored successfully");
+      navigate('/');
     }
 
-    users.push(formData);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    console.log("user stored successfully");
-    navigate('/');
   }
 
   function handleUpdate(event) {
     event.preventDefault();
-    console.log(formData);
+    setValidateOnChange(true);
 
-    let users = JSON.parse(localStorage.getItem('users'));
+    if (validatePreferences()) {
+      setValidateOnChange(false);
 
-    let updatedUsers = users.map((user) => {
-      if (user.id === formData.id) {
-        user = { ...formData }
-      }
-      return user;
-    });
+      console.log(formData);
+      let users = JSON.parse(localStorage.getItem('users'));
 
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-    console.log("user updated successfully");
-    navigate('/');
+      let updatedUsers = users.map((user) => {
+        if (user.id === formData.id) {
+          user = { ...formData }
+        }
+        return user;
+      });
+
+      localStorage.setItem("users", JSON.stringify(updatedUsers));
+      console.log("user updated successfully");
+      navigate('/');
+    }
   }
 
   let component;
@@ -369,6 +620,7 @@ function JobForm() {
         <TechnologyKnown
           technologyKnown={formData.technologyKnown}
           technologyKnownError={formErrorData.technologyKnown}
+          isAtleastOneTechSelected={formErrorData.isAtleastOneTechSelected}
           updateFormData={updateFormData}
         />
       );
@@ -378,6 +630,7 @@ function JobForm() {
         <LanguageKnown
           languageKnown={formData.languageKnown}
           languageKnownError={formErrorData.languageKnown}
+          isAtleastOneLanguageSelected={formErrorData.isAtleastOneLanguageSelected}
           updateFormData={updateFormData}
         />
       );
@@ -387,7 +640,6 @@ function JobForm() {
         <WorkExperience
           workExperiences={formData.workExperiences}
           workExperiencesError={formErrorData.workExperiences}
-          setFormErrorData={setFormErrorData}
           updateFormData={updateFormData}
         />
       );
@@ -396,6 +648,7 @@ function JobForm() {
       component = (
         <ReferenceDetails
           referenceDetails={formData.referenceDetails}
+          referenceDetailsError={formErrorData.referenceDetails}
           updateFormData={updateFormData}
         />
       );
@@ -404,6 +657,7 @@ function JobForm() {
       component = (
         <Preferences
           preferences={formData.preferences}
+          preferencesError={formErrorData.preferences}
           updateFormData={updateFormData}
         />
       );

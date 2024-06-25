@@ -71,6 +71,10 @@ const cityData = [
 
 const departmentData = [
   {
+    value: "",
+    label: "select department",
+  },
+  {
     value: "design",
     label: "Design",
   },
@@ -269,6 +273,14 @@ const initialFormErrorData = {
       },
     },
   },
+  isAtleastOneTechSelected: {
+    status: true,
+    title: ""
+  },
+  isAtleastOneLanguageSelected: {
+    status: true,
+    title: ""
+  },
   technologyKnown: {
     php: {
       errorStatus: false,
@@ -305,25 +317,25 @@ const initialFormErrorData = {
       title: ""
     },
   },
-  workExperiences: {
-    '1': {
-      companyName: {
-        errorStatus: false,
-        title: ""
-      },
-      designation: {
-        errorStatus: false,
-        title: ""
-      },
-      from: {
-        errorStatus: false,
-        title: ""
-      },
-      to: {
-        errorStatus: false,
-        title: ""
-      },
-    }
+  workExperiences: {},
+  referenceDetails: {},
+  preferences: {
+    currentCTC: {
+      errorStatus: false,
+      title: ""
+    },
+    expectedCTC: {
+      errorStatus: false,
+      title: ""
+    },
+    noticePeriod: {
+      errorStatus: false,
+      title: ""
+    },
+    preferedLocations: {
+      errorStatus: false,
+      title: ""
+    },
   }
 }
 

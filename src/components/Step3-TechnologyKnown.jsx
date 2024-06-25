@@ -1,6 +1,6 @@
 import InputRadio from "./InputRadio";
 
-function TechnologyKnown({ technologyKnown, technologyKnownError, updateFormData }) {
+function TechnologyKnown({ technologyKnown, technologyKnownError, isAtleastOneTechSelected, updateFormData }) {
   let technologies = Object.keys(technologyKnown);
 
   function handleChange(event) {
@@ -59,11 +59,11 @@ function TechnologyKnown({ technologyKnown, technologyKnownError, updateFormData
         );
       })}
 
-      {/* <div className={`${errorObj?.errorStatus ? '' : 'hidden'}`}>
+      <div className={`${!isAtleastOneTechSelected?.status ? '' : 'hidden'}`}>
         <span className="text-red-600">
-          {errorObj?.title}
+          {isAtleastOneTechSelected?.title}
         </span>
-      </div> */}
+      </div>
     </div>
   );
 }

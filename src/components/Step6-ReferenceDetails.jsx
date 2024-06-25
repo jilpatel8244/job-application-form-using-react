@@ -1,7 +1,7 @@
 import InputText from "./InputText";
 import { v4 as uuidv4 } from 'uuid';
 
-function ReferenceDetails({referenceDetails, updateFormData}) {
+function ReferenceDetails({referenceDetails, referenceDetailsError, updateFormData}) {
 
   function handleChange(event) {
     const {name, value, id} = event.target;
@@ -49,7 +49,7 @@ function ReferenceDetails({referenceDetails, updateFormData}) {
       </button>
       {
         referenceDetails.map((referenceDetail) => {
-          return <ReferenceDetailsLine key={referenceDetail.id} {...referenceDetail} deleteReference={deleteReference} handleChange={handleChange} />
+          return <ReferenceDetailsLine key={referenceDetail.id} referenceDetailsError={referenceDetailsError} {...referenceDetail} deleteReference={deleteReference} handleChange={handleChange} />
         })
       }
     </div>
@@ -58,7 +58,7 @@ function ReferenceDetails({referenceDetails, updateFormData}) {
 
 export default ReferenceDetails;
 
-function ReferenceDetailsLine({id, name, phoneNumber, relation, deleteReference, handleChange}) {
+function ReferenceDetailsLine({id, name, phoneNumber, relation, deleteReference, handleChange, referenceDetailsError}) {
   return (
     <div className="flex">
       <div className="mx-5">
@@ -71,6 +71,7 @@ function ReferenceDetailsLine({id, name, phoneNumber, relation, deleteReference,
           label="Name"
           value={name}
           handleChange={handleChange}
+          errorObj={referenceDetailsError[`name_${id}`]}
         />
       </div>
       <div className="mx-5">
@@ -83,6 +84,7 @@ function ReferenceDetailsLine({id, name, phoneNumber, relation, deleteReference,
           label="Phone Number"
           value={phoneNumber}
           handleChange={handleChange}
+          errorObj={referenceDetailsError[`phoneNumber_${id}`]}
         />
       </div>
       <div className="mx-5">
@@ -95,6 +97,7 @@ function ReferenceDetailsLine({id, name, phoneNumber, relation, deleteReference,
           label="Relation"
           value={relation}
           handleChange={handleChange}
+          errorObj={referenceDetailsError[`relation_${id}`]}
         />
       </div>
       <button type="button" onClick={() => {deleteReference(id)}}>

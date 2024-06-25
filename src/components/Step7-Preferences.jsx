@@ -2,7 +2,7 @@ import { departmentData, officeLocations } from "../helper/data";
 import InputText from "./InputText";
 import SelectComponent from "./SelectComponent";
 
-function Preferences({ preferences, updateFormData }) {
+function Preferences({ preferences, updateFormData, preferencesError }) {
   function handleChange(event) {
     const { name, value } = event.target;
     let newValue = value;
@@ -25,6 +25,7 @@ function Preferences({ preferences, updateFormData }) {
           label="Current CTC"
           value={preferences.currentCTC}
           handleChange={handleChange}
+          errorObj={preferencesError.currentCTC}
         />
         <InputText
           type="text"
@@ -35,6 +36,7 @@ function Preferences({ preferences, updateFormData }) {
           label="Expected CTC"
           value={preferences.expectedCTC}
           handleChange={handleChange}
+          errorObj={preferencesError.expectedCTC}
         />
       </div>
       <div className="grid md:grid-cols-2 md:gap-6">
@@ -47,6 +49,7 @@ function Preferences({ preferences, updateFormData }) {
           label="Notice Period"
           value={preferences.noticePeriod}
           handleChange={handleChange}
+          errorObj={preferencesError.noticePeriod}
         />
         <SelectComponent
           name="department"
@@ -55,6 +58,7 @@ function Preferences({ preferences, updateFormData }) {
           options={departmentData}
           value={preferences.department}
           handleChange={handleChange}
+          errorObj={preferencesError.department}
         />
       </div>
       <SelectComponent
@@ -65,6 +69,7 @@ function Preferences({ preferences, updateFormData }) {
         multiple="true"
         value={preferences.preferedLocations}
         handleChange={handleChange}
+        errorObj={preferencesError.preferedLocations}
       />
     </div>
   );
