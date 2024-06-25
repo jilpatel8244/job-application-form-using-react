@@ -322,7 +322,7 @@ function JobForm() {
     localStorage.setItem("users", JSON.stringify(users));
 
     console.log("user stored successfully");
-    navigate('/list-users');
+    navigate('/');
   }
 
   function handleUpdate(event) {
@@ -340,7 +340,7 @@ function JobForm() {
 
     localStorage.setItem("users", JSON.stringify(updatedUsers));
     console.log("user updated successfully");
-    navigate('/list-users');
+    navigate('/');
   }
 
   let component;

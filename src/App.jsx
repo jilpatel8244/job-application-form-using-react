@@ -8,7 +8,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route>
-            <Route path="/list-users" element={<UsersList />} />
+            <Route path="/" element={<UsersList />} />
             <Route path="/add-application" element={<JobForm />} />
             <Route path="/update-application/:id" element={<JobForm />} />
           </Route>
