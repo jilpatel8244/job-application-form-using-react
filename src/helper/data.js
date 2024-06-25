@@ -305,9 +305,8 @@ const initialFormErrorData = {
       title: ""
     },
   },
-  workExperiences: [
-    { 
-      id: "1",
+  workExperiences: {
+    '1': {
       companyName: {
         errorStatus: false,
         title: ""
@@ -324,8 +323,8 @@ const initialFormErrorData = {
         errorStatus: false,
         title: ""
       },
-    },
-  ],
+    }
+  }
 }
 
 export {

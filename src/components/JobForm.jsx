@@ -10,7 +10,7 @@ import Preferences from "./Step7-Preferences";
 import { initialFormData, initialFormErrorData, languageKnown, stepDetails } from "../helper/data";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
-import formFields from "../helper/formValidationData";
+import formFields, { validateEmail, validatePhone } from "../helper/formValidationData";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -69,6 +69,20 @@ function JobForm() {
           errorStatus = true;
           fieldName = field.name;
           errorTitle = "field is required !";
+        }
+
+        if (rule === "email" && value && !validateEmail(value)) {
+          validate = false;
+          errorStatus = true;
+          fieldName = field.name;
+          errorTitle = `Please enter valid ${field.name} !`;
+        }
+
+        if (rule === "phone" && value && !validatePhone(value)) {
+          validate = false;
+          errorStatus = true;
+          fieldName = field.name;
+          errorTitle = `Please enter valid ${field.name} !`;
         }
       });
       setFormErrorData((prevData) => {
@@ -133,8 +147,6 @@ function JobForm() {
 
   function validateTechnologyKnown() {
     let validate = true;
-
-    console.log(formData.technologyKnown);
 
     for (const [key, value] of Object.entries(formData.technologyKnown)) {
       setFormErrorData((prevData) => {
@@ -211,13 +223,45 @@ function JobForm() {
   function validateWorkExperience() {
     let validate = true;
 
-    console.log(formData.workExperiences);
 
-    for (const [key, value] of Object.entries(formData.workExperiences)) {
+    formData.workExperiences.forEach((workExperience) => {
+      let count = 0;
+      let id;
+      for (const [key, value] of Object.entries(workExperience)) {
+        if (key === "id") {
+          id = value;
+        }
+        if (value) {
+          count = count + 1;
+        }
+      }
+
       
-    }
+      if (count !== Object.keys(workExperience).length && count !== 1) {
+        validate = false;
+        for (const [key, value] of Object.entries(workExperience)) {
+          if (!value) {
+            setFormErrorData((prevData) => {
+              return {
+                ...prevData,
+                workExperiences: {
+                  ...prevData.workExperiences,
+                  [`${id}`]: {
+                    ...prevData.workExperiences[id],
+                    [`${key}`]: {
+                      errorStatus: true,
+                      title: "its required"
+                    }
+                  }
+                }
+              }
+            })
+          }
+        }
+      }
+    })
 
-    return false;
+    return validate;
   }
 
   function nextBtnHandler() {

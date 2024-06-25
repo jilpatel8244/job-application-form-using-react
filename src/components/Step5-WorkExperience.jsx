@@ -2,6 +2,7 @@ import InputText from "./InputText";
 import { v4 as uuidv4 } from 'uuid';
 
 function WorkExperience({ workExperiences, workExperiencesError, setFormErrorData, updateFormData }) {
+  console.log("++++++", workExperiencesError);
   function handleChange(event) {
     const { name, value, id } = event.target;
     const specificObjId = id.split("_")[1];
@@ -26,23 +27,24 @@ function WorkExperience({ workExperiences, workExperiencesError, setFormErrorDat
     };
 
     let newErrorObj = {
-      id: newGeneratedId,
-      companyName: {
-        errorStatus: false,
-        title: ""
-      },
-      designation: {
-        errorStatus: false,
-        title: ""
-      },
-      from: {
-        errorStatus: false,
-        title: ""
-      },
-      to: {
-        errorStatus: false,
-        title: ""
-      },
+      [newGeneratedId]: {
+        companyName: {
+          errorStatus: false,
+          title: ""
+        },
+        designation: {
+          errorStatus: false,
+          title: ""
+        },
+        from: {
+          errorStatus: false,
+          title: ""
+        },
+        to: {
+          errorStatus: false,
+          title: ""
+        }
+      }
     }
 
     updateFormData({ workExperiences: [...workExperiences, newWorkExperience] });
@@ -50,8 +52,8 @@ function WorkExperience({ workExperiences, workExperiencesError, setFormErrorDat
       return {
         ...prevData,
         workExperiences: {
-          ...prevData.workExperience,
-          newErrorObj
+          ...prevData.workExperiences,
+          ...newErrorObj
         }
       }
     })
@@ -63,7 +65,17 @@ function WorkExperience({ workExperiences, workExperiencesError, setFormErrorDat
         return workExperience.id !== id
       });
 
+      let filteredWorkExpErrorObj =  Object.fromEntries(
+        Object.entries(workExperiencesError).filter(([key, value]) => key != id)
+      )
+
       updateFormData({ workExperiences: [...filterdWorkExperience] });
+      setFormErrorData((prevData) => {
+        return {
+          ...prevData,
+          workExperiences: filteredWorkExpErrorObj
+        }
+      })
     }
   }
 
@@ -95,7 +107,7 @@ function WorkExperienceLine({ id, companyName, designation, from, to, workExperi
 
   return (
     <div className="flex">
-      {inputFields.map((field) => (
+      {inputFields.map((field, index) => (
         <div key={field.name} className="mx-5">
           <InputText
             type={field.type}
@@ -106,7 +118,7 @@ function WorkExperienceLine({ id, companyName, designation, from, to, workExperi
             label={field.label}
             value={field.name === "companyName" ? companyName : field.name === "designation" ? designation : field.name === "from" ? from : to}
             handleChange={handleChange}
-            errorObj={workExperiencesError[field.name]}
+            errorObj={workExperiencesError[`${id}`][`${field.name}`]}
           />
         </div>
       ))}
