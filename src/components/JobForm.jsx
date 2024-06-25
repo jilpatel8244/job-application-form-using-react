@@ -153,9 +153,31 @@ function JobForm() {
           })
         })
       }
+
+      // for (const [key, value] of Object.entries(formData.educationDetails)) {
+      //   for (const [innerKey, innerValue] of Object.entries(formData.educationDetails)) {
+      //     if (innerKey === 'passingYear' && innerValue && (innerValue.length !== 4 || !isNumber(innerValue))) {
+      //       console.log("here");
+      //       validate = false;
+      //       setFormErrorData((prevData) => {
+      //         return {
+      //           ...prevData,
+      //           educationDetails: {
+      //             ...prevData.educationDetails,
+      //             [innerKey]: {
+      //               ...prevData.educationDetails[innerKey],
+      //               passingYear: {
+      //                 errorStatus: "please enter valid year",
+      //                 title: title
+      //               }
+      //             }
+      //           }
+      //         }
+      //       })
+      //     }
+      //   }
+      // }
     }
-
-
 
     return validate;
   }
@@ -344,37 +366,84 @@ function JobForm() {
         }
       }
 
-        if (workExperience.from && new Date(workExperience.from) > new Date()) {
-          validate = false;          
-          setFormErrorData((prevData) => {
-            return {
-              ...prevData,
-              workExperiences: {
-                ...prevData.workExperiences,
-                [`from_${id}`]: {
-                  errorStatus: true,
-                  title: "from date must not greater than today"
-                }
+      if (workExperience.companyName && !isString(workExperience.companyName)) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            workExperiences: {
+              ...prevData.workExperiences,
+              [`companyName_${id}`]: {
+                errorStatus: true,
+                title: "company name is not valid string"
               }
             }
-          })
-        }
-        if ((workExperience.from && workExperience.to) && (new Date(workExperience.from) > new Date(workExperience.to))) {
-          validate = false;          
-          setFormErrorData((prevData) => {
-            return {
-              ...prevData,
-              workExperiences: {
-                ...prevData.workExperiences,
-                [`to_${id}`]: {
-                  errorStatus: true,
-                  title: "to date must not greater than from"
-                }
+          }
+        })
+      }
+
+      if (workExperience.designation && !isString(workExperience.designation)) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            workExperiences: {
+              ...prevData.workExperiences,
+              [`designation_${id}`]: {
+                errorStatus: true,
+                title: "designation is not valid string"
               }
             }
-          })
-        }
-      
+          }
+        })
+      }
+
+      if (workExperience.from && new Date(workExperience.from) > new Date()) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            workExperiences: {
+              ...prevData.workExperiences,
+              [`from_${id}`]: {
+                errorStatus: true,
+                title: "from date must not greater than today"
+              }
+            }
+          }
+        })
+      }
+      if (workExperience.to && new Date(workExperience.to) > new Date()) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            workExperiences: {
+              ...prevData.workExperiences,
+              [`to_${id}`]: {
+                errorStatus: true,
+                title: "to date must not greater than today"
+              }
+            }
+          }
+        })
+      }
+      if ((workExperience.from && workExperience.to) && (new Date(workExperience.from) > new Date(workExperience.to))) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            workExperiences: {
+              ...prevData.workExperiences,
+              [`to_${id}`]: {
+                errorStatus: true,
+                title: "to date must not less than from"
+              }
+            }
+          }
+        })
+      }
+
     })
 
     return validate;
@@ -445,6 +514,54 @@ function JobForm() {
             })
           }
         }
+      }
+
+      if (singleReferenceDetail.name && !isString(singleReferenceDetail.name)) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            referenceDetails: {
+              ...prevData.referenceDetails,
+              [`name_${id}`]: {
+                errorStatus: true,
+                title: "name is not valid string"
+              }
+            }
+          }
+        })
+      }
+
+      if (singleReferenceDetail.relation && !isString(singleReferenceDetail.relation)) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            referenceDetails: {
+              ...prevData.referenceDetails,
+              [`relation_${id}`]: {
+                errorStatus: true,
+                title: "relation is not valid string"
+              }
+            }
+          }
+        })
+      }
+
+      if (singleReferenceDetail.phoneNumber && !validatePhone(singleReferenceDetail.phoneNumber)) {
+        validate = false;
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            referenceDetails: {
+              ...prevData.referenceDetails,
+              [`phoneNumber_${id}`]: {
+                errorStatus: true,
+                title: "phone number is not valid"
+              }
+            }
+          }
+        })
       }
     })
 

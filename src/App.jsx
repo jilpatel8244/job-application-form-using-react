@@ -11,6 +11,7 @@ function App() {
             <Route path="/" element={<UsersList />} />
             <Route path="/add-application" element={<JobForm />} />
             <Route path="/update-application/:id" element={<JobForm />} />
+            <Route path="/delete-application/:id" element={<DeleteApplication />} />
           </Route>
         </Routes>
       </BrowserRouter>

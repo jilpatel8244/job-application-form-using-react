@@ -59,6 +59,9 @@ function UsersList() {
                                                 <td className="px-6 py-4">
                                                     <Link to={`/update-application/${user.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</Link>
                                                 </td>
+                                                <td className="px-6 py-4">
+                                                    <Link to={`/delete-application/${user.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</Link>
+                                                </td>
                                             </tr>
                                         ))
                                     }
