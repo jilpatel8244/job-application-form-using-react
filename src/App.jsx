@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import UsersList from "./components/UsersList"
 import JobForm from "./components/JobForm"
+import DeleteApplication from "./components/DeleteApplication"
 
 function App() {
   return (

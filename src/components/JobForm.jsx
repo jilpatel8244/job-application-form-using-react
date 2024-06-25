@@ -9,22 +9,24 @@ import ReferenceDetails from "./Step6-ReferenceDetails";
 import Preferences from "./Step7-Preferences";
 import { initialFormData, initialFormErrorData, languageKnown, stepDetails } from "../helper/data";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formBasicDetailsFields, formPreferencesFields, formReferenceFields, isNumber, isString, validateEmail, validatePhone } from "../helper/formValidationData";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [localStorageValue, setLocalStorageValue] = useLocalStorage('users');
+  const { id } = useParams();
+  const { getDataById } = useLocalStorage('users');
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialFormData);
   const [formErrorData, setFormErrorData] = useState(initialFormErrorData)
   const [validateOnChange, setValidateOnChange] = useState(false);
 
   useEffect(() => {
-    if (localStorageValue?.length) {
-      setFormData(...localStorageValue);
+    if (id) {
+      let data = getDataById(id);
+      setFormData(data);
     }
-  }, [localStorageValue])
+  }, [])
 
   useEffect(() => {
     if (validateOnChange) {
@@ -665,26 +667,27 @@ function JobForm() {
 
   function handleSubmit(event) {
     event.preventDefault();
+    console.log(formData);
     setValidateOnChange(true);
 
-    if (validatePreferences()) {
-      setValidateOnChange(false);
+    // if (validatePreferences()) {
+    //   setValidateOnChange(false);
 
-      console.log(formData);
-      let users = localStorage.getItem('users');
+    //   // let users = localStorage.getItem('users');
 
-      if (users) {
-        users = JSON.parse(localStorage.getItem('users'));
-      } else {
-        users = [];
-      }
+    //   // if (users) {
+    //   //   users = JSON.parse(localStorage.getItem('users'));
+    //   // } else {
+    //   //   users = [];
+    //   // }
 
-      users.push(formData);
-      localStorage.setItem("users", JSON.stringify(users));
+    //   // users.push(formData);
+    //   // localStorage.setItem("users", JSON.stringify(users));
+    //   // initializeData(formData);
 
-      console.log("user stored successfully");
-      navigate('/');
-    }
+    //   console.log("user stored successfully");
+    //   // navigate('/');
+    // }
 
   }
 
