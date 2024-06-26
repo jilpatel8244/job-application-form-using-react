@@ -7,7 +7,6 @@ function useLocalStorage(key) {
     });
 
     useEffect(() => {
-        console.log("hello");
         localStorage.setItem(key, JSON.stringify(storedData))
     }, [key, storedData]);
 

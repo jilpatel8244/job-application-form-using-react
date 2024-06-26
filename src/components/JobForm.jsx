@@ -7,10 +7,10 @@ import LanguageKnown from "./Step4-LanguageKnown";
 import WorkExperience from "./Step5-WorkExperience";
 import ReferenceDetails from "./Step6-ReferenceDetails";
 import Preferences from "./Step7-Preferences";
+import { toast } from "react-toastify";
 import {
   initialFormData,
   initialFormErrorData,
-  languageKnown,
   stepDetails,
 } from "../helper/data";
 import useLocalStorage from "../hooks/useLocalStorage";
@@ -18,7 +18,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   formBasicDetailsFields,
   formPreferencesFields,
-  formReferenceFields,
   isNumber,
   isString,
   validateEmail,
@@ -108,7 +107,20 @@ function JobForm() {
           errorStatus = true;
           errorTitle = `${field.name} must be a string!`;
         }
+
+        if (rule === "dateToday" && value && new Date(value) > new Date()) {
+          validate = false;
+          errorStatus = true;
+          errorTitle = `${field.name} must not greater than today!`;
+        }
+
+        if (rule === "maxLength" && value && value.trim().length > 20) {
+          validate = false;
+          errorStatus = true;
+          errorTitle = `${field.name} must be less than 20 characters!`;
+        }
       });
+
       setFormErrorData((prevData) => {
         return {
           ...prevData,
@@ -122,8 +134,6 @@ function JobForm() {
         };
       });
     });
-
-    console.log(validate);
 
     return validate;
   }
@@ -142,7 +152,6 @@ function JobForm() {
         (field) => details[field].trim() !== ""
       );
 
-      console.log("isAnyFieldFilled", isAnyFieldFilled);
       if (isAnyFieldFilled) {
         fields.forEach((field) => {
           let errorStatus = false;
@@ -152,21 +161,21 @@ function JobForm() {
             errorStatus = true;
             title = "required !";
           } else {
-            // Additional checks for specific fields
             if (field === "boardName" || field === "courseName" || field === "univercityName") {
               const namePattern = /^[a-zA-Z\s]+$/; // Only allows letters and spaces
               if (!namePattern.test(details[field])) {
                 validate = false;
                 errorStatus = true;
                 title = "must be a valid string!";
-              } else if (details[field].length > 20) {
+              } else if (details[field].trim().length > 20) {
                 validate = false;
                 errorStatus = true;
-                title = `must be less than ${20} characters!`;
+                title = `must be less than 20 characters!`;
               }
             }  else if (field === "passingYear") {
-              const yearPattern = /^(19|20)\d{2}$/; // Example pattern for years 1900-2099
-              if (!yearPattern.test(details[field])) {
+              const currentYear = new Date().getFullYear();
+              const yearPattern = new RegExp(`^(19[0-9][0-9]|20[0-${currentYear % 10}][0-9]|20${Math.floor(currentYear / 10)}[0-${currentYear % 10}])$`);
+              if (!yearPattern.test(details[field]) || Number(details[field]) > currentYear) {
                 validate = false;
                 errorStatus = true;
                 title = "invalid year format !";
@@ -197,7 +206,6 @@ function JobForm() {
           });
         });
       } else {
-        console.log("in side else");
         setFormErrorData((prevData) => {
           return {
             ...prevData,
@@ -269,7 +277,6 @@ function JobForm() {
   }
 
   function validateLanguageKnown() {
-    console.log(formData.languageKnown);
     let validate = true;
 
     let atleastOneSelected = false;
@@ -340,7 +347,7 @@ function JobForm() {
         if (key === "id") {
           id = value;
         }
-        if (value) {
+        if (value.trim()) {
           count = count + 1;
         }
       }
@@ -349,7 +356,7 @@ function JobForm() {
         validate = false;
         for (const [key, value] of Object.entries(workExperience)) {
           let newErrObj;
-          if (!value) {
+          if (!value.trim()) {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: true,
@@ -374,7 +381,6 @@ function JobForm() {
             };
           });
         }
-        console.log(count);
       } else {
         for (const [key, value] of Object.entries(workExperience)) {
           if (
@@ -399,7 +405,7 @@ function JobForm() {
         }
       }
 
-      if (workExperience.companyName && !isString(workExperience.companyName)) {
+      if (workExperience.companyName && !isString(workExperience.companyName) || workExperience.companyName.trim().length > 50) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -415,7 +421,7 @@ function JobForm() {
         });
       }
 
-      if (workExperience.designation && !isString(workExperience.designation)) {
+      if (workExperience.designation && !isString(workExperience.designation) || workExperience.designation.trim().length > 50) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -495,7 +501,7 @@ function JobForm() {
         if (key === "id") {
           id = value;
         }
-        if (value) {
+        if (value.trim()) {
           count = count + 1;
         }
       }
@@ -504,7 +510,7 @@ function JobForm() {
         validate = false;
         for (const [key, value] of Object.entries(singleReferenceDetail)) {
           let newErrObj;
-          if (!value) {
+          if (!value.trim()) {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: true,
@@ -529,7 +535,6 @@ function JobForm() {
             };
           });
         }
-        console.log(count);
       } else {
         for (const [key, value] of Object.entries(singleReferenceDetail)) {
           if (
@@ -554,7 +559,7 @@ function JobForm() {
         }
       }
 
-      if (singleReferenceDetail.name && !isString(singleReferenceDetail.name)) {
+      if (singleReferenceDetail.name && !isString(singleReferenceDetail.name) || singleReferenceDetail.name.trim().length > 50) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -572,7 +577,8 @@ function JobForm() {
 
       if (
         singleReferenceDetail.relation &&
-        !isString(singleReferenceDetail.relation)
+        !isString(singleReferenceDetail.relation) ||
+        singleReferenceDetail.relation.trim().length > 50
       ) {
         validate = false;
         setFormErrorData((prevData) => {
@@ -651,8 +657,6 @@ function JobForm() {
         };
       });
     });
-
-    console.log(validate);
     return validate;
   }
 
@@ -715,7 +719,10 @@ function JobForm() {
 
       addData(formData);
 
-      console.log("user stored successfully");
+      toast.success("Your Application Created Successfully !", {
+        position: 'top-center',
+      });
+      
       navigate("/");
     }
   }
@@ -728,7 +735,11 @@ function JobForm() {
       setValidateOnChange(false);
 
       updateDataById(id, formData);
-      console.log("user updated successfully");
+
+      toast.success("Your Application Updated Successfully !", {
+        position: 'top-center',
+      });
+
       navigate("/");
     }
   }

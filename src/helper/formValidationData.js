@@ -1,11 +1,11 @@
 const formBasicDetailsFields = [
-    { name: "firstName", rules: ["required", "string"] },
-    { name: "lastName", rules: ["required", "string"] },
+    { name: "firstName", rules: ["required", "string", "maxLength"] },
+    { name: "lastName", rules: ["required", "string", "maxLength"] },
     { name: "email", rules: ["required", "email"] },
     { name: "phoneNumber", rules: ["required", "phone"] },
-    { name: "designation", rules: ["required", "string"] },
+    { name: "designation", rules: ["required", "string", "maxLength"] },
     { name: "gender", rules: ["required"] },
-    { name: "dob", rules: ["required"] }
+    { name: "dob", rules: ["required", "dateToday"] }
 ];
 
 const formPreferencesFields = [
@@ -41,7 +41,7 @@ const isNumber = (number) => {
     return !isNaN(number)
 }
 
-const isString = value => typeof value === 'string' && /^[a-zA-Z]+$/.test(value);
+const isString = value => typeof value === 'string' && /^[a-zA-Z\s]+$/.test(value); 
 
 
 export { validateEmail, validatePhone, validatePassword, isNumber, isString, formReferenceFields, formBasicDetailsFields, formPreferencesFields };

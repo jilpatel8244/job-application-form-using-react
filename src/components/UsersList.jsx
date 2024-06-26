@@ -1,8 +1,27 @@
 import { Link } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
+import Swal from 'sweetalert2'
 
 function UsersList() {
-    let { storedData } = useLocalStorage('users');
+    const { storedData, removeDataById } = useLocalStorage('users');
+
+    function deleteHandler(id) {
+        console.log(id);
+
+        Swal.fire({
+            title: 'Are You Sure ?',
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "Cancel",
+            icon: 'warning'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                removeDataById(id);
+                Swal.fire('Application Deleted Successfully', '', 'success');
+            }
+        })
+    }
 
     return (
         <div>
@@ -57,10 +76,8 @@ function UsersList() {
                                                     {user.basicDetails.gender}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <Link to={`/update-application/${user.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</Link>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <Link to={`/delete-application/${user.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</Link>
+                                                    <Link to={`/update-application/${user.id}`} className="mx-2 font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</Link>
+                                                    <button onClick={() => { deleteHandler(user.id) }} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">delete</button>
                                                 </td>
                                             </tr>
                                         ))
