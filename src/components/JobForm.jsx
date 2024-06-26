@@ -7,18 +7,31 @@ import LanguageKnown from "./Step4-LanguageKnown";
 import WorkExperience from "./Step5-WorkExperience";
 import ReferenceDetails from "./Step6-ReferenceDetails";
 import Preferences from "./Step7-Preferences";
-import { initialFormData, initialFormErrorData, languageKnown, stepDetails } from "../helper/data";
+import {
+  initialFormData,
+  initialFormErrorData,
+  languageKnown,
+  stepDetails,
+} from "../helper/data";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useNavigate, useParams } from "react-router-dom";
-import { formBasicDetailsFields, formPreferencesFields, formReferenceFields, isNumber, isString, validateEmail, validatePhone } from "../helper/formValidationData";
+import {
+  formBasicDetailsFields,
+  formPreferencesFields,
+  formReferenceFields,
+  isNumber,
+  isString,
+  validateEmail,
+  validatePhone,
+} from "../helper/formValidationData";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const { id } = useParams();
-  const { getDataById } = useLocalStorage('users');
+  const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialFormData);
-  const [formErrorData, setFormErrorData] = useState(initialFormErrorData)
+  const [formErrorData, setFormErrorData] = useState(initialFormErrorData);
   const [validateOnChange, setValidateOnChange] = useState(false);
 
   useEffect(() => {
@@ -26,31 +39,31 @@ function JobForm() {
       let data = getDataById(id);
       setFormData(data);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (validateOnChange) {
       switch (currentStep) {
         case 1:
-          validateBasicDetails()
+          validateBasicDetails();
           break;
         case 2:
-          validateEducationDetails()
+          validateEducationDetails();
           break;
         case 3:
-          validateTechnologyKnown()
+          validateTechnologyKnown();
           break;
         case 4:
-          validateLanguageKnown()
+          validateLanguageKnown();
           break;
         case 5:
-          validateWorkExperience()
+          validateWorkExperience();
           break;
         case 6:
-          validateReferenceDetails()
+          validateReferenceDetails();
           break;
         case 7:
-          validatePreferences()
+          validatePreferences();
           break;
 
         default:
@@ -103,9 +116,9 @@ function JobForm() {
             ...prevData.basicDetails,
             [fieldName]: {
               errorStatus: errorStatus,
-              title: errorTitle
-            }
-          }
+              title: errorTitle,
+            },
+          },
         };
       });
     });
@@ -118,68 +131,84 @@ function JobForm() {
   function validateEducationDetails() {
     let validate = true;
 
-    for (const [key, value] of Object.entries(formData.educationDetails)) {
+    const levels = Object.keys(formData.educationDetails);
 
-      let filteredArr = Object.entries(value).filter((childElement) => {
-        let [key, value] = childElement;
+    levels.forEach((level) => {
+      const details = formData.educationDetails[level];
+      const fields = Object.keys(details);
 
-        console.log(value);
+      // Check if any field in the current level is filled
+      const isAnyFieldFilled = fields.some(
+        (field) => details[field].trim() !== ""
+      );
 
-        return !value
-      })
-
-      let errorStatus = false;
-      let title = "";
-
-      if (filteredArr.length !== 0 && filteredArr.length !== Object.entries(value).length) {
-        validate = false;
-        filteredArr.forEach((element) => {
-          if (!element[1]) {
+      console.log("isAnyFieldFilled", isAnyFieldFilled);
+      if (isAnyFieldFilled) {
+        fields.forEach((field) => {
+          let errorStatus = false;
+          let title = "";
+          if (details[field].trim() === "") {
+            validate = false;
             errorStatus = true;
-            title = "its required !"
+            title = "required !";
+          } else {
+            // Additional checks for specific fields
+            if (field === "boardName" || field === "courseName" || field === "univercityName") {
+              const namePattern = /^[a-zA-Z\s]+$/; // Only allows letters and spaces
+              if (!namePattern.test(details[field])) {
+                validate = false;
+                errorStatus = true;
+                title = "must be a valid string!";
+              } else if (details[field].length > 20) {
+                validate = false;
+                errorStatus = true;
+                title = `must be less than ${20} characters!`;
+              }
+            }  else if (field === "passingYear") {
+              const yearPattern = /^(19|20)\d{2}$/; // Example pattern for years 1900-2099
+              if (!yearPattern.test(details[field])) {
+                validate = false;
+                errorStatus = true;
+                title = "invalid year format !";
+              }
+            } else if (field === "percentage") {
+              const percentagePattern = /^(\d{1,2}(\.\d{1,2})?|100)$/; // Example pattern for percentage 0-100 with up to 2 decimal places
+              if (!percentagePattern.test(details[field])) {
+                validate = false;
+                errorStatus = true;
+                title = "invalid percentage format !";
+              }
+            }
           }
           setFormErrorData((prevData) => {
             return {
               ...prevData,
               educationDetails: {
                 ...prevData.educationDetails,
-                [key]: {
-                  ...prevData.educationDetails[key],
-                  [element[0]]: {
+                [level]: {
+                  ...prevData.educationDetails[level],
+                  [field]: {
                     errorStatus: errorStatus,
-                    title: title
-                  }
-                }
-              }
-            }
-          })
-        })
+                    title: title,
+                  },
+                },
+              },
+            };
+          });
+        });
+      } else {
+        console.log("in side else");
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            educationDetails: {
+              ...prevData.educationDetails,
+              [level]: initialFormErrorData.educationDetails[level],
+            },
+          };
+        });
       }
-
-      // for (const [key, value] of Object.entries(formData.educationDetails)) {
-      //   for (const [innerKey, innerValue] of Object.entries(formData.educationDetails)) {
-      //     if (innerKey === 'passingYear' && innerValue && (innerValue.length !== 4 || !isNumber(innerValue))) {
-      //       console.log("here");
-      //       validate = false;
-      //       setFormErrorData((prevData) => {
-      //         return {
-      //           ...prevData,
-      //           educationDetails: {
-      //             ...prevData.educationDetails,
-      //             [innerKey]: {
-      //               ...prevData.educationDetails[innerKey],
-      //               passingYear: {
-      //                 errorStatus: "please enter valid year",
-      //                 title: title
-      //               }
-      //             }
-      //           }
-      //         }
-      //       })
-      //     }
-      //   }
-      // }
-    }
+    });
 
     return validate;
   }
@@ -200,17 +229,17 @@ function JobForm() {
     if (!atleastOneSelected) {
       validate = false;
       status = false;
-      title = "Please selct atleast one technology"
+      title = "Please selct atleast one technology";
     }
     setFormErrorData((prevData) => {
       return {
         ...prevData,
         isAtleastOneTechSelected: {
           status: status,
-          title: title
-        }
-      }
-    })
+          title: title,
+        },
+      };
+    });
 
     for (const [key, value] of Object.entries(formData.technologyKnown)) {
       if (value.selected) {
@@ -219,7 +248,7 @@ function JobForm() {
         if (!value.level) {
           validate = false;
           errorStatus = true;
-          title = "please select level"
+          title = "please select level";
         }
         setFormErrorData((prevData) => {
           return {
@@ -228,11 +257,11 @@ function JobForm() {
               ...prevData.technologyKnown,
               [key]: {
                 errorStatus: errorStatus,
-                title: title
-              }
-            }
-          }
-        })
+                title: title,
+              },
+            },
+          };
+        });
       }
     }
 
@@ -256,17 +285,17 @@ function JobForm() {
     if (!atleastOneSelected) {
       validate = false;
       status = false;
-      title = "Please selct atleast one language"
+      title = "Please selct atleast one language";
     }
     setFormErrorData((prevData) => {
       return {
         ...prevData,
         isAtleastOneLanguageSelected: {
           status: status,
-          title: title
-        }
-      }
-    })
+          title: title,
+        },
+      };
+    });
 
     for (const [key, value] of Object.entries(formData.languageKnown)) {
       let errorStatus = false;
@@ -281,7 +310,7 @@ function JobForm() {
         if (!atleastOneSelected) {
           validate = false;
           errorStatus = true;
-          title = "please selct one"
+          title = "please selct one";
         }
       }
       setFormErrorData((prevData) => {
@@ -291,11 +320,11 @@ function JobForm() {
             ...prevData.languageKnown,
             [key]: {
               errorStatus: errorStatus,
-              title: title
-            }
-          }
-        }
-      })
+              title: title,
+            },
+          },
+        };
+      });
     }
 
     return validate;
@@ -324,46 +353,48 @@ function JobForm() {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: true,
-                title: "required"
-              }
-            }
+                title: "required",
+              },
+            };
           } else {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: false,
-                title: ""
-              }
-            }
+                title: "",
+              },
+            };
           }
           setFormErrorData((prevData) => {
             return {
               ...prevData,
               workExperiences: {
                 ...prevData.workExperiences,
-                ...newErrObj
-              }
-            }
-          })
+                ...newErrObj,
+              },
+            };
+          });
         }
         console.log(count);
       } else {
         for (const [key, value] of Object.entries(workExperience)) {
-          if (Object.keys(formErrorData.workExperiences).includes(`${key}_${id}`)) {
+          if (
+            Object.keys(formErrorData.workExperiences).includes(`${key}_${id}`)
+          ) {
             let newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: false,
-                title: ""
-              }
-            }
+                title: "",
+              },
+            };
             setFormErrorData((prevData) => {
               return {
                 ...prevData,
                 workExperiences: {
                   ...prevData.workExperiences,
-                  ...newErrObj
-                }
-              }
-            })
+                  ...newErrObj,
+                },
+              };
+            });
           }
         }
       }
@@ -377,11 +408,11 @@ function JobForm() {
               ...prevData.workExperiences,
               [`companyName_${id}`]: {
                 errorStatus: true,
-                title: "company name is not valid string"
-              }
-            }
-          }
-        })
+                title: "company name is not valid string",
+              },
+            },
+          };
+        });
       }
 
       if (workExperience.designation && !isString(workExperience.designation)) {
@@ -393,11 +424,11 @@ function JobForm() {
               ...prevData.workExperiences,
               [`designation_${id}`]: {
                 errorStatus: true,
-                title: "designation is not valid string"
-              }
-            }
-          }
-        })
+                title: "designation is not valid string",
+              },
+            },
+          };
+        });
       }
 
       if (workExperience.from && new Date(workExperience.from) > new Date()) {
@@ -409,11 +440,11 @@ function JobForm() {
               ...prevData.workExperiences,
               [`from_${id}`]: {
                 errorStatus: true,
-                title: "from date must not greater than today"
-              }
-            }
-          }
-        })
+                title: "from date must not greater than today",
+              },
+            },
+          };
+        });
       }
       if (workExperience.to && new Date(workExperience.to) > new Date()) {
         validate = false;
@@ -424,13 +455,17 @@ function JobForm() {
               ...prevData.workExperiences,
               [`to_${id}`]: {
                 errorStatus: true,
-                title: "to date must not greater than today"
-              }
-            }
-          }
-        })
+                title: "to date must not greater than today",
+              },
+            },
+          };
+        });
       }
-      if ((workExperience.from && workExperience.to) && (new Date(workExperience.from) > new Date(workExperience.to))) {
+      if (
+        workExperience.from &&
+        workExperience.to &&
+        new Date(workExperience.from) > new Date(workExperience.to)
+      ) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -439,14 +474,13 @@ function JobForm() {
               ...prevData.workExperiences,
               [`to_${id}`]: {
                 errorStatus: true,
-                title: "to date must not less than from"
-              }
-            }
-          }
-        })
+                title: "to date must not less than from",
+              },
+            },
+          };
+        });
       }
-
-    })
+    });
 
     return validate;
   }
@@ -474,46 +508,48 @@ function JobForm() {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: true,
-                title: "required"
-              }
-            }
+                title: "required",
+              },
+            };
           } else {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: false,
-                title: ""
-              }
-            }
+                title: "",
+              },
+            };
           }
           setFormErrorData((prevData) => {
             return {
               ...prevData,
               referenceDetails: {
                 ...prevData.referenceDetails,
-                ...newErrObj
-              }
-            }
-          })
+                ...newErrObj,
+              },
+            };
+          });
         }
         console.log(count);
       } else {
         for (const [key, value] of Object.entries(singleReferenceDetail)) {
-          if (Object.keys(formErrorData.referenceDetails).includes(`${key}_${id}`)) {
+          if (
+            Object.keys(formErrorData.referenceDetails).includes(`${key}_${id}`)
+          ) {
             let newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: false,
-                title: ""
-              }
-            }
+                title: "",
+              },
+            };
             setFormErrorData((prevData) => {
               return {
                 ...prevData,
                 referenceDetails: {
                   ...prevData.referenceDetails,
-                  ...newErrObj
-                }
-              }
-            })
+                  ...newErrObj,
+                },
+              };
+            });
           }
         }
       }
@@ -527,14 +563,17 @@ function JobForm() {
               ...prevData.referenceDetails,
               [`name_${id}`]: {
                 errorStatus: true,
-                title: "name is not valid string"
-              }
-            }
-          }
-        })
+                title: "name is not valid string",
+              },
+            },
+          };
+        });
       }
 
-      if (singleReferenceDetail.relation && !isString(singleReferenceDetail.relation)) {
+      if (
+        singleReferenceDetail.relation &&
+        !isString(singleReferenceDetail.relation)
+      ) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -543,14 +582,17 @@ function JobForm() {
               ...prevData.referenceDetails,
               [`relation_${id}`]: {
                 errorStatus: true,
-                title: "relation is not valid string"
-              }
-            }
-          }
-        })
+                title: "relation is not valid string",
+              },
+            },
+          };
+        });
       }
 
-      if (singleReferenceDetail.phoneNumber && !validatePhone(singleReferenceDetail.phoneNumber)) {
+      if (
+        singleReferenceDetail.phoneNumber &&
+        !validatePhone(singleReferenceDetail.phoneNumber)
+      ) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -559,13 +601,13 @@ function JobForm() {
               ...prevData.referenceDetails,
               [`phoneNumber_${id}`]: {
                 errorStatus: true,
-                title: "phone number is not valid"
-              }
-            }
-          }
-        })
+                title: "phone number is not valid",
+              },
+            },
+          };
+        });
       }
-    })
+    });
 
     return validate;
   }
@@ -603,9 +645,9 @@ function JobForm() {
             ...prevData.preferences,
             [fieldName]: {
               errorStatus: errorStatus,
-              title: errorTitle
-            }
-          }
+              title: errorTitle,
+            },
+          },
         };
       });
     });
@@ -620,25 +662,25 @@ function JobForm() {
     let validateStatus = true;
     switch (currentStep) {
       case 1:
-        validateStatus = validateBasicDetails()
+        validateStatus = validateBasicDetails();
         break;
       case 2:
-        validateStatus = validateEducationDetails()
+        validateStatus = validateEducationDetails();
         break;
       case 3:
-        validateStatus = validateTechnologyKnown()
+        validateStatus = validateTechnologyKnown();
         break;
       case 4:
-        validateStatus = validateLanguageKnown()
+        validateStatus = validateLanguageKnown();
         break;
       case 5:
-        validateStatus = validateWorkExperience()
+        validateStatus = validateWorkExperience();
         break;
       case 6:
-        validateStatus = validateReferenceDetails()
+        validateStatus = validateReferenceDetails();
         break;
       case 7:
-        validateStatus = validatePreferences()
+        validateStatus = validatePreferences();
         break;
 
       default:
@@ -649,7 +691,6 @@ function JobForm() {
       setValidateOnChange(false);
       setCurrentStep(currentStep + 1);
     }
-
   }
 
   function prevBtnHandler() {
@@ -667,28 +708,16 @@ function JobForm() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
     setValidateOnChange(true);
 
-    // if (validatePreferences()) {
-    //   setValidateOnChange(false);
+    if (validatePreferences()) {
+      setValidateOnChange(false);
 
-    //   // let users = localStorage.getItem('users');
+      addData(formData);
 
-    //   // if (users) {
-    //   //   users = JSON.parse(localStorage.getItem('users'));
-    //   // } else {
-    //   //   users = [];
-    //   // }
-
-    //   // users.push(formData);
-    //   // localStorage.setItem("users", JSON.stringify(users));
-    //   // initializeData(formData);
-
-    //   console.log("user stored successfully");
-    //   // navigate('/');
-    // }
-
+      console.log("user stored successfully");
+      navigate("/");
+    }
   }
 
   function handleUpdate(event) {
@@ -698,19 +727,9 @@ function JobForm() {
     if (validatePreferences()) {
       setValidateOnChange(false);
 
-      console.log(formData);
-      let users = JSON.parse(localStorage.getItem('users'));
-
-      let updatedUsers = users.map((user) => {
-        if (user.id === formData.id) {
-          user = { ...formData }
-        }
-        return user;
-      });
-
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
+      updateDataById(id, formData);
       console.log("user updated successfully");
-      navigate('/');
+      navigate("/");
     }
   }
 
@@ -750,7 +769,9 @@ function JobForm() {
         <LanguageKnown
           languageKnown={formData.languageKnown}
           languageKnownError={formErrorData.languageKnown}
-          isAtleastOneLanguageSelected={formErrorData.isAtleastOneLanguageSelected}
+          isAtleastOneLanguageSelected={
+            formErrorData.isAtleastOneLanguageSelected
+          }
           updateFormData={updateFormData}
         />
       );
@@ -796,7 +817,7 @@ function JobForm() {
       <div className="w-full">
         <form
           onSubmit={(e) => {
-            localStorageValue.length ? handleUpdate(e) : handleSubmit(e)
+            id ? handleUpdate(e) : handleSubmit(e);
           }}
         >
           <div className="flex justify-center my-5">{component}</div>

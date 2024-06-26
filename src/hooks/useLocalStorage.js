@@ -1,29 +1,3 @@
-// import { useEffect, useState } from "react";
-
-// function useLocalStorage(key, id = null) {
-//     const [localStorageValue, setLocalStorageValue] = useState(null);
-
-//     useEffect(() => {
-//         let data = localStorage.getItem(key);
-
-//         if (data) {
-//             if (id) {
-//                 let filteredData = JSON.parse(data).filter((singleElement) => {
-//                     return singleElement.id === id
-//                 });
-//                 setLocalStorageValue(filteredData);
-//             } else {
-//                 setLocalStorageValue(JSON.parse(data));
-//             }
-//         }
-//     }, [key])
-
-
-//     return [localStorageValue, setLocalStorageValue];
-// }
-
-// export default useLocalStorage;
-
 import { useState, useEffect } from 'react';
 
 function useLocalStorage(key) {
@@ -32,44 +6,39 @@ function useLocalStorage(key) {
         return item ? JSON.parse(item) : [];
     });
 
-    // useEffect(() => {
-    //     window.localStorage.setItem(key, JSON.stringify(storedData));
-    // }, [key, storedData]);
+    useEffect(() => {
+        console.log("hello");
+        localStorage.setItem(key, JSON.stringify(storedData))
+    }, [key, storedData]);
 
     const getDataById = (id) => {
         return storedData.find((item) => item.id === id);
     };
 
-    const initializeData = (data) => {
-        console.log(data);
-        let users = localStorage.getItem(key);
-
-        if (users) {
-            users = JSON.parse(localStorage.getItem(key));
-        } else {
-            users = [];
-        }
-
-        users.push(data);
-        setStoredData(users);
-        localStorage.setItem(key, JSON.stringify(users));
-    }
+    const addData = (newData) => {
+        const updatedData = [...storedData, newData];
+        setStoredData(updatedData);
+        localStorage.setItem(key, JSON.stringify(updatedData))
+    };
 
     const removeDataById = (id) => {
         const updatedData = storedData.filter((item) => item.id !== id);
         setStoredData(updatedData);
+        localStorage.setItem(key, JSON.stringify(updatedData))
     };
 
     const updateDataById = (id, newData) => {
         const updatedData = storedData.map((item) =>
             item.id === id ? { ...item, ...newData } : item
         );
+        console.log(updatedData);
         setStoredData(updatedData);
+        localStorage.setItem(key, JSON.stringify(updatedData))
     };
 
     return {
         storedData,
-        initializeData,
+        addData,
         getDataById,
         removeDataById,
         updateDataById,
