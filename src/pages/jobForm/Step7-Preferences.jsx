@@ -1,8 +1,13 @@
-import { departmentData, officeLocations } from "../helper/data";
-import InputText from "./InputText";
-import SelectComponent from "./SelectComponent";
+import { departmentData, officeLocations } from "../../data/data";
+import InputText from "../../components/form/InputText";
+import SelectComponent from "../../components/form/SelectComponent";
+import { useContext } from "react";
+import { FormContext } from "../../context/FormContext";
 
-function Preferences({ preferences, updateFormData, preferencesError }) {
+function Preferences() {
+  const { formData: { preferences }, formErrorData, updateFormData } = useContext(FormContext);
+  const preferencesError = formErrorData.preferences;
+
   function handleChange(event) {
     const { name, value } = event.target;
     let newValue = value;

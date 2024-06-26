@@ -1,6 +1,12 @@
-import InputRadio from "./InputRadio";
+import { useContext } from "react";
+import InputRadio from "../../components/form/InputRadio";
+import { FormContext } from "../../context/FormContext";
 
-function TechnologyKnown({ technologyKnown, technologyKnownError, isAtleastOneTechSelected, updateFormData }) {
+function TechnologyKnown() {
+  const {formData: {technologyKnown}, formErrorData, updateFormData} = useContext(FormContext);
+  const technologyKnownError = formErrorData.technologyKnown;
+  const { isAtleastOneTechSelected } = formErrorData;
+
   let technologies = Object.keys(technologyKnown);
 
   function handleChange(event) {

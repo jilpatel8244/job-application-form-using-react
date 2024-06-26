@@ -1,6 +1,12 @@
-import InputRadio from "./InputRadio";
+import { useContext } from "react";
+import InputRadio from "../../components/form/InputRadio";
+import { FormContext } from "../../context/FormContext";
 
-function LanguageKnown({ languageKnown, languageKnownError, isAtleastOneLanguageSelected, updateFormData }) {
+function LanguageKnown() {
+  const { formData: { languageKnown }, formErrorData, updateFormData } = useContext(FormContext);
+  const languageKnownError = formErrorData.languageKnown;
+  const { isAtleastOneLanguageSelected } = formErrorData;
+
   let languages = Object.keys(languageKnown);
 
   function handleChange(event) {

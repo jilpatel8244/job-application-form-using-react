@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useLocalStorage from "../hooks/useLocalStorage";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import Swal from 'sweetalert2'
 
 function UsersList() {

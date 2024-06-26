@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProgressBar from "./ProgressBar";
 import BasicDetails from "./Step1-BasicDetails";
 import EducationDetails from "./Step2-EducationalDetails";
@@ -12,8 +12,8 @@ import {
   initialFormData,
   initialFormErrorData,
   stepDetails,
-} from "../helper/data";
-import useLocalStorage from "../hooks/useLocalStorage";
+} from "../../data/data";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   formBasicDetailsFields,
@@ -22,15 +22,15 @@ import {
   isString,
   validateEmail,
   validatePhone,
-} from "../helper/formValidationData";
+} from "../../utiils/formValidationData";
+import { FormContext } from "../../context/FormContext";
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const { id } = useParams();
   const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
-  const [formData, setFormData] = useState(initialFormData);
-  const [formErrorData, setFormErrorData] = useState(initialFormErrorData);
+  const {formData, formErrorData, setFormData, setFormErrorData} = useContext(FormContext);
   const [validateOnChange, setValidateOnChange] = useState(false);
 
   useEffect(() => {
@@ -701,15 +701,6 @@ function JobForm() {
     setCurrentStep(currentStep - 1);
   }
 
-  function updateFormData(stepData) {
-    setFormData((prevData) => {
-      return {
-        ...prevData,
-        ...stepData,
-      };
-    });
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
     setValidateOnChange(true);
@@ -748,71 +739,25 @@ function JobForm() {
 
   switch (currentStep) {
     case 1:
-      component = (
-        <BasicDetails
-          basicDetails={formData.basicDetails}
-          basicDetailsError={formErrorData.basicDetails}
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<BasicDetails />);
       break;
     case 2:
-      component = (
-        <EducationDetails
-          educationDetails={formData.educationDetails}
-          educationDetailsError={formErrorData.educationDetails}
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<EducationDetails />);
       break;
     case 3:
-      component = (
-        <TechnologyKnown
-          technologyKnown={formData.technologyKnown}
-          technologyKnownError={formErrorData.technologyKnown}
-          isAtleastOneTechSelected={formErrorData.isAtleastOneTechSelected}
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<TechnologyKnown />);
       break;
     case 4:
-      component = (
-        <LanguageKnown
-          languageKnown={formData.languageKnown}
-          languageKnownError={formErrorData.languageKnown}
-          isAtleastOneLanguageSelected={
-            formErrorData.isAtleastOneLanguageSelected
-          }
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<LanguageKnown />);
       break;
     case 5:
-      component = (
-        <WorkExperience
-          workExperiences={formData.workExperiences}
-          workExperiencesError={formErrorData.workExperiences}
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<WorkExperience />);
       break;
     case 6:
-      component = (
-        <ReferenceDetails
-          referenceDetails={formData.referenceDetails}
-          referenceDetailsError={formErrorData.referenceDetails}
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<ReferenceDetails />);
       break;
     case 7:
-      component = (
-        <Preferences
-          preferences={formData.preferences}
-          preferencesError={formErrorData.preferences}
-          updateFormData={updateFormData}
-        />
-      );
+      component = (<Preferences />);
       break;
 
     default:

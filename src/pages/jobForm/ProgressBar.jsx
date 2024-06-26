@@ -1,4 +1,4 @@
-import { stepDetails } from "../helper/data";
+import { stepDetails } from "../../data/data";
 
 function ProgressBar({ currentStep }){
     return (

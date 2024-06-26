@@ -1,9 +1,14 @@
-import { cityData, stateData } from "../helper/data";
-import InputRadio from "./InputRadio";
-import InputText from "./InputText";
-import SelectComponent from "./SelectComponent";
+import { cityData, stateData } from "../../data/data";
+import InputRadio from "../../components/form/InputRadio";
+import InputText from "../../components/form/InputText";
+import SelectComponent from "../../components/form/SelectComponent";
+import { useContext } from "react";
+import { FormContext } from "../../context/FormContext";
 
-function BasicDetails({ basicDetails, basicDetailsError, updateFormData }) {
+function BasicDetails() {
+  const {formData: {basicDetails}, formErrorData, updateFormData} = useContext(FormContext);
+  const basicDetailsError = formErrorData.basicDetails;
+
   function handleChange(event) {
     const { name, value } = event.target;
     updateFormData({ basicDetails: { ...basicDetails, [name]: value } })

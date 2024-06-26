@@ -1,7 +1,11 @@
-import InputText from "./InputText";
+import { useContext } from "react";
+import InputText from "../../components/form/InputText";
 import { v4 as uuidv4 } from 'uuid';
+import { FormContext } from "../../context/FormContext";
 
-function ReferenceDetails({referenceDetails, referenceDetailsError, updateFormData}) {
+function ReferenceDetails() {
+  const { formData: { referenceDetails }, formErrorData, updateFormData } = useContext(FormContext);
+  const referenceDetailsError = formErrorData.referenceDetails;
 
   function handleChange(event) {
     const {name, value, id} = event.target;

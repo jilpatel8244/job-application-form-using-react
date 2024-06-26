@@ -1,6 +1,11 @@
-import InputText from "./InputText";
+import { useContext } from "react";
+import InputText from "../../components/form/InputText";
+import { FormContext } from "../../context/FormContext";
 
-function EducationDetails({ educationDetails, educationDetailsError, updateFormData }) {
+function EducationDetails() {
+  const {formData: {educationDetails}, formErrorData, updateFormData} = useContext(FormContext);
+  const educationDetailsError = formErrorData.educationDetails;
+
   function handleChange(event) {
     const {name, value} = event.target;
     const [level, field] = name.split("_");

@@ -1,7 +1,11 @@
-import InputText from "./InputText";
+import { useContext } from "react";
+import InputText from "../../components/form/InputText";
 import { v4 as uuidv4 } from 'uuid';
+import { FormContext } from "../../context/FormContext";
 
-function WorkExperience({ workExperiences, workExperiencesError, updateFormData }) {
+function WorkExperience() {
+  const { formData: { workExperiences }, formErrorData, updateFormData } = useContext(FormContext);
+  const workExperiencesError = formErrorData.workExperiences;
 
   function handleChange(event) {
     const { name, value, id } = event.target;
