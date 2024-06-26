@@ -123,6 +123,7 @@ const initialFormData = {
     state: "gujarat",
     city: "surat",
     dob: "",
+    profileImg: ""
   },
   educationDetails: {
     ssc: {
@@ -206,6 +207,10 @@ const initialFormErrorData = {
       errorStatus: false,
       title: ""
     },
+    profileImg: {
+      errorStatus: false,
+      title: ""
+    }
   },
   educationDetails: {
     ssc: {

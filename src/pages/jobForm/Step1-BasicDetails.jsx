@@ -6,12 +6,61 @@ import { useContext } from "react";
 import { FormContext } from "../../context/FormContext";
 
 function BasicDetails() {
-  const {formData: {basicDetails}, formErrorData, updateFormData} = useContext(FormContext);
+  const { formData: { basicDetails }, formErrorData, setFormErrorData, updateFormData } = useContext(FormContext);
   const basicDetailsError = formErrorData.basicDetails;
 
   function handleChange(event) {
     const { name, value } = event.target;
     updateFormData({ basicDetails: { ...basicDetails, [name]: value } })
+  }
+
+  function handleFileChange(event) {
+    const { name } = event.target;
+    console.log(event.target.files[0]);
+
+    let file = event.target.files[0];
+    let maxSize = 2 * 1024 * 1024;
+
+    if (file) {
+      if (file.size < maxSize) {
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          updateFormData({ basicDetails: { ...basicDetails, [name]: base64String } })
+        }
+
+        reader.readAsDataURL(file);
+
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            basicDetails: {
+              ...prevData.basicDetails,
+              'profileImg': {
+                errorStatus: false,
+                title: ""
+              }
+            }
+          }
+        })
+      } else {
+        setFormErrorData((prevData) => {
+          return {
+            ...prevData,
+            basicDetails: {
+              ...prevData.basicDetails,
+              'profileImg': {
+                errorStatus: true,
+                title: "file must be less than 2 mb"
+              }
+            }
+          }
+        })
+      }
+    } else {
+      updateFormData({ basicDetails: { ...basicDetails, [name]: "" } })
+    }
   }
 
   return (
@@ -156,6 +205,16 @@ function BasicDetails() {
         handleChange={handleChange}
         errorObj={basicDetailsError.dob}
       />
+
+      {
+        basicDetails.profileImg && <img src={basicDetails.profileImg} alt="ProfileImg" height={200} width={200} />
+      }
+      <input type="file" name="profileImg" onChange={handleFileChange} />
+      <div className={`${basicDetailsError.profileImg?.errorStatus ? '' : 'hidden'}`}>
+        <span className="text-red-600">
+          {basicDetailsError.profileImg?.title}
+        </span>
+      </div>
     </div>
   );
 }

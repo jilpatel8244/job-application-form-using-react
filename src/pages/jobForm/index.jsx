@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import ProgressBar from "./ProgressBar";
 import BasicDetails from "./Step1-BasicDetails";
 import EducationDetails from "./Step2-EducationalDetails";
@@ -9,7 +9,6 @@ import ReferenceDetails from "./Step6-ReferenceDetails";
 import Preferences from "./Step7-Preferences";
 import { toast } from "react-toastify";
 import {
-  initialFormData,
   initialFormErrorData,
   stepDetails,
 } from "../../data/data";
@@ -30,7 +29,7 @@ function JobForm() {
   const { id } = useParams();
   const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
-  const {formData, formErrorData, setFormData, setFormErrorData} = useContext(FormContext);
+  const { formData, formErrorData, setFormData, setFormErrorData } = useContext(FormContext);
   const [validateOnChange, setValidateOnChange] = useState(false);
 
   useEffect(() => {
@@ -134,7 +133,7 @@ function JobForm() {
         };
       });
     });
-
+    
     return validate;
   }
 
@@ -172,7 +171,7 @@ function JobForm() {
                 errorStatus = true;
                 title = `must be less than 20 characters!`;
               }
-            }  else if (field === "passingYear") {
+            } else if (field === "passingYear") {
               const currentYear = new Date().getFullYear();
               const yearPattern = new RegExp(`^(19[0-9][0-9]|20[0-${currentYear % 10}][0-9]|20${Math.floor(currentYear / 10)}[0-${currentYear % 10}])$`);
               if (!yearPattern.test(details[field]) || Number(details[field]) > currentYear) {
@@ -713,7 +712,7 @@ function JobForm() {
       toast.success("Your Application Created Successfully !", {
         position: 'top-center',
       });
-      
+
       navigate("/");
     }
   }
@@ -735,34 +734,30 @@ function JobForm() {
     }
   }
 
-  let component;
+  let component = useMemo(() => {
+    let component;
+    switch (currentStep) {
+      case 1:
+        return (<BasicDetails />);
+      case 2:
+        return (<EducationDetails />);
+      case 3:
+        return (<TechnologyKnown />);
+      case 4:
+        return (<LanguageKnown />);
+      case 5:
+        return (<WorkExperience />);
+      case 6:
+        return (<ReferenceDetails />);
+      case 7:
+        return (<Preferences />);
 
-  switch (currentStep) {
-    case 1:
-      component = (<BasicDetails />);
-      break;
-    case 2:
-      component = (<EducationDetails />);
-      break;
-    case 3:
-      component = (<TechnologyKnown />);
-      break;
-    case 4:
-      component = (<LanguageKnown />);
-      break;
-    case 5:
-      component = (<WorkExperience />);
-      break;
-    case 6:
-      component = (<ReferenceDetails />);
-      break;
-    case 7:
-      component = (<Preferences />);
-      break;
+      default:
+        break;
+    }
+    return component;
+  }, [currentStep])
 
-    default:
-      break;
-  }
 
   return (
     <div>
