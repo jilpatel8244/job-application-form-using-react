@@ -158,6 +158,7 @@ const initialFormData = {
       designation: "",
       from: "",
       to: "",
+      skills: []
     },
   ],
   referenceDetails: [
@@ -344,6 +345,8 @@ const initialFormErrorData = {
   }
 }
 
+const predefinedSkillsList = ["node", "react", "angular", "database", "mysql", "express", "sequelize"];
+
 export {
   stepDetails,
   stateData,
@@ -353,5 +356,6 @@ export {
   technologyKnown,
   languageKnown,
   initialFormData,
-  initialFormErrorData
+  initialFormErrorData,
+  predefinedSkillsList
 };

@@ -25,7 +25,7 @@ import {
 import { FormContext } from "../../context/FormContext";
 
 function JobForm() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(5);
   const { id } = useParams();
   const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
