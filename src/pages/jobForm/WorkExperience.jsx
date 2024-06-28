@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import InputText from "../../components/form/InputText";
 import { v4 as uuidv4 } from 'uuid';
 import { FormContext } from "../../context/FormContext";
-import { predefinedSkillsList } from "../../data/data";
+import WorkExpDropDown from "../../components/commonComponents/WorkExpDropDown";
 
 function WorkExperience() {
   const { formData: { workExperiences }, formErrorData, updateFormData } = useContext(FormContext);
@@ -29,6 +29,7 @@ function WorkExperience() {
       designation: "",
       from: "",
       to: "",
+      skills: []
     };
     updateFormData({ workExperiences: [...workExperiences, newWorkExperience] });
   }
@@ -42,20 +43,6 @@ function WorkExperience() {
     }
   }
 
-  function handleSkillAdd(skill, id) {
-    console.log(skill);
-
-    const updatedWorkExperiences = workExperiences?.map(workExperience => {
-      if (workExperience.id === id) {
-        let newSkills = [...workExperience.skills, skill]
-        return { ...workExperience, skills: newSkills };
-      }
-      return workExperience;
-    });
-
-    updateFormData({ workExperiences: updatedWorkExperiences });
-  }
-
   return (
     <div>
       <button
@@ -66,7 +53,7 @@ function WorkExperience() {
         Add
       </button>
       {workExperiences?.map((workExperience) => {
-        return <WorkExperienceLine key={workExperience.id} handleSkillAdd={handleSkillAdd} {...workExperience} workExperiencesError={workExperiencesError} handleChange={handleChange} deleteExperience={deleteExperience} />;
+        return <WorkExperienceLine key={workExperience.id} {...workExperience} workExperiencesError={workExperiencesError} handleChange={handleChange} deleteExperience={deleteExperience} />;
       })}
     </div>
   );
@@ -74,8 +61,7 @@ function WorkExperience() {
 
 export default WorkExperience;
 
-function WorkExperienceLine({ id, companyName, designation, from, to, skills, handleSkillAdd, workExperiencesError, handleChange, deleteExperience }) {
-  const [onfocus, setOnfocus] = useState(false);
+function WorkExperienceLine({ id, companyName, designation, from, to, skills, workExperiencesError, handleChange, deleteExperience }) {
 
   const inputFields = [
     { name: "companyName", label: "Company Name", type: "text" },
@@ -106,29 +92,9 @@ function WorkExperienceLine({ id, companyName, designation, from, to, skills, ha
           delete
         </button>
       </div>
-      <div>
-          {
-            skills?.length !== 0 && (
-              <ul>
-                {
-                  skills?.map(skill => (<li key={skill}>{skill}</li>))
-                }
-              </ul>
-            )
-          }
-      </div>
-      <div>
-        <input type="text" placeholder="search skills" onFocus={() => { setOnfocus(true) }} />
-        {
-          onfocus && (
-            <ul>
-              {
-                predefinedSkillsList.map((skill) => (<li onClick={() => {handleSkillAdd(skill, id)}} key={skill}>{skill}</li>))
-              }
-            </ul>
-          )
-        }
-      </div>
+      
+      <WorkExpDropDown id={id} skills={skills} />
+
     </div>
   );
 }

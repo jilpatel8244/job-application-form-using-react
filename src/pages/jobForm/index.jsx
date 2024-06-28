@@ -359,16 +359,16 @@ function JobForm() {
         if (key === "id") {
           id = value;
         }
-        if (value.trim()) {
+        if (key !== 'skills' && value.trim()) {
           count = count + 1;
         }
       }
 
-      if (count !== Object.keys(workExperience).length && count !== 1) {
+      if (count !== Object.keys(workExperience).length-1 && count !== 1) {
         validate = false;
         for (const [key, value] of Object.entries(workExperience)) {
           let newErrObj;
-          if (!value.trim()) {
+          if (key !== 'skills' && !value.trim()) {
             newErrObj = {
               [`${key}_${id}`]: {
                 errorStatus: true,
