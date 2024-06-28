@@ -1,17 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useContext, useEffect, useMemo, useState } from "react";
 import ProgressBar from "./ProgressBar";
-import BasicDetails from "./Step1-BasicDetails";
-import EducationDetails from "./Step2-EducationalDetails";
-import TechnologyKnown from "./Step3-TechnologyKnown";
-import LanguageKnown from "./Step4-LanguageKnown";
-import WorkExperience from "./Step5-WorkExperience";
-import ReferenceDetails from "./Step6-ReferenceDetails";
-import Preferences from "./Step7-Preferences";
 import { toast } from "react-toastify";
-import {
-  initialFormErrorData,
-  stepDetails,
-} from "../../data/data";
+import { initialFormData, initialFormErrorData } from "../../data/data";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -23,6 +13,16 @@ import {
   validatePhone,
 } from "../../utiils/formValidationData";
 import { FormContext } from "../../context/FormContext";
+import NavigationBtns from "./NavigationBtns";
+import Loader from "../../components/commonComponents/Loader";
+
+const BasicDetails = lazy(() => import("./BasicDetails"));
+const EducationDetails = lazy(() => import("./EducationalDetails"));
+const TechnologyKnown = lazy(() => import("./TechnologyKnown"));
+const LanguageKnown = lazy(() => import("./LanguageKnown"));
+const WorkExperience = lazy(() => import("./WorkExperience"));
+const ReferenceDetails = lazy(() => import("./ReferenceDetails"));
+const Preferences = lazy(() => import("./Preferences"));
 
 function JobForm() {
   const [currentStep, setCurrentStep] = useState(5);
@@ -36,6 +36,8 @@ function JobForm() {
     if (id) {
       let data = getDataById(id);
       setFormData(data);
+    } else {
+      setFormData(initialFormData);
     }
   }, []);
 
@@ -133,7 +135,7 @@ function JobForm() {
         };
       });
     });
-    
+
     return validate;
   }
 
@@ -160,7 +162,11 @@ function JobForm() {
             errorStatus = true;
             title = "required !";
           } else {
-            if (field === "boardName" || field === "courseName" || field === "univercityName") {
+            if (
+              field === "boardName" ||
+              field === "courseName" ||
+              field === "univercityName"
+            ) {
               const namePattern = /^[a-zA-Z\s]+$/; // Only allows letters and spaces
               if (!namePattern.test(details[field])) {
                 validate = false;
@@ -173,8 +179,15 @@ function JobForm() {
               }
             } else if (field === "passingYear") {
               const currentYear = new Date().getFullYear();
-              const yearPattern = new RegExp(`^(19[0-9][0-9]|20[0-${currentYear % 10}][0-9]|20${Math.floor(currentYear / 10)}[0-${currentYear % 10}])$`);
-              if (!yearPattern.test(details[field]) || Number(details[field]) > currentYear) {
+              const yearPattern = new RegExp(
+                `^(19[0-9][0-9]|20[0-${currentYear % 10}][0-9]|20${Math.floor(
+                  currentYear / 10
+                )}[0-${currentYear % 10}])$`
+              );
+              if (
+                !yearPattern.test(details[field]) ||
+                Number(details[field]) > currentYear
+              ) {
                 validate = false;
                 errorStatus = true;
                 title = "invalid year format !";
@@ -404,7 +417,10 @@ function JobForm() {
         }
       }
 
-      if (workExperience.companyName && !isString(workExperience.companyName) || workExperience.companyName.trim().length > 50) {
+      if (
+        (workExperience.companyName && !isString(workExperience.companyName)) ||
+        workExperience.companyName.trim().length > 50
+      ) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -420,7 +436,10 @@ function JobForm() {
         });
       }
 
-      if (workExperience.designation && !isString(workExperience.designation) || workExperience.designation.trim().length > 50) {
+      if (
+        (workExperience.designation && !isString(workExperience.designation)) ||
+        workExperience.designation.trim().length > 50
+      ) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -558,7 +577,10 @@ function JobForm() {
         }
       }
 
-      if (singleReferenceDetail.name && !isString(singleReferenceDetail.name) || singleReferenceDetail.name.trim().length > 50) {
+      if (
+        (singleReferenceDetail.name && !isString(singleReferenceDetail.name)) ||
+        singleReferenceDetail.name.trim().length > 50
+      ) {
         validate = false;
         setFormErrorData((prevData) => {
           return {
@@ -575,8 +597,8 @@ function JobForm() {
       }
 
       if (
-        singleReferenceDetail.relation &&
-        !isString(singleReferenceDetail.relation) ||
+        (singleReferenceDetail.relation &&
+          !isString(singleReferenceDetail.relation)) ||
         singleReferenceDetail.relation.trim().length > 50
       ) {
         validate = false;
@@ -707,57 +729,40 @@ function JobForm() {
     if (validatePreferences()) {
       setValidateOnChange(false);
 
-      addData(formData);
+      id ? updateDataById(id, formData) : addData(formData);
 
-      toast.success("Your Application Created Successfully !", {
-        position: 'top-center',
-      });
-
-      navigate("/");
-    }
-  }
-
-  function handleUpdate(event) {
-    event.preventDefault();
-    setValidateOnChange(true);
-
-    if (validatePreferences()) {
-      setValidateOnChange(false);
-
-      updateDataById(id, formData);
-
-      toast.success("Your Application Updated Successfully !", {
-        position: 'top-center',
-      });
+      toast.success(
+        `Your Application ${id ? "Updated" : "Created"} Successfully !`,
+        {
+          position: "top-center",
+        }
+      );
 
       navigate("/");
     }
   }
 
   let component = useMemo(() => {
-    let component;
     switch (currentStep) {
       case 1:
-        return (<BasicDetails />);
+        return <BasicDetails />;
       case 2:
-        return (<EducationDetails />);
+        return <EducationDetails />;
       case 3:
-        return (<TechnologyKnown />);
+        return <TechnologyKnown />;
       case 4:
-        return (<LanguageKnown />);
+        return <LanguageKnown />;
       case 5:
-        return (<WorkExperience />);
+        return <WorkExperience />;
       case 6:
-        return (<ReferenceDetails />);
+        return <ReferenceDetails />;
       case 7:
-        return (<Preferences />);
+        return <Preferences />;
 
       default:
         break;
     }
-    return component;
-  }, [currentStep])
-
+  }, [currentStep]);
 
   return (
     <div>
@@ -766,40 +771,15 @@ function JobForm() {
       </div>
       <ProgressBar currentStep={currentStep} />
       <div className="w-full">
-        <form
-          onSubmit={(e) => {
-            id ? handleUpdate(e) : handleSubmit(e);
-          }}
-        >
-          <div className="flex justify-center my-5">{component}</div>
-          <div className="flex justify-center">
-            {currentStep > 1 && (
-              <button
-                type="button"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                onClick={prevBtnHandler}
-              >
-                Prev
-              </button>
-            )}
-            {currentStep < stepDetails.length && (
-              <button
-                type="button"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                onClick={nextBtnHandler}
-              >
-                Next
-              </button>
-            )}
-            {currentStep === stepDetails.length && (
-              <button
-                type="submit"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-              >
-                Submit
-              </button>
-            )}
+        <form onSubmit={(e) => {handleSubmit(e)}}>
+          <div className="flex justify-center my-5">
+            <Suspense fallback={<Loader />}>{component}</Suspense>
           </div>
+          <NavigationBtns
+            currentStep={currentStep}
+            nextBtnHandler={nextBtnHandler}
+            prevBtnHandler={prevBtnHandler}
+          />
         </form>
       </div>
     </div>

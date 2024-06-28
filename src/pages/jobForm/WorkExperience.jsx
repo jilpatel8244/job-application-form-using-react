@@ -45,7 +45,7 @@ function WorkExperience() {
   function handleSkillAdd(skill, id) {
     console.log(skill);
 
-    const updatedWorkExperiences = workExperiences.map(workExperience => {
+    const updatedWorkExperiences = workExperiences?.map(workExperience => {
       if (workExperience.id === id) {
         let newSkills = [...workExperience.skills, skill]
         return { ...workExperience, skills: newSkills };
@@ -65,7 +65,7 @@ function WorkExperience() {
       >
         Add
       </button>
-      {workExperiences.map((workExperience) => {
+      {workExperiences?.map((workExperience) => {
         return <WorkExperienceLine key={workExperience.id} handleSkillAdd={handleSkillAdd} {...workExperience} workExperiencesError={workExperiencesError} handleChange={handleChange} deleteExperience={deleteExperience} />;
       })}
     </div>
@@ -87,7 +87,7 @@ function WorkExperienceLine({ id, companyName, designation, from, to, skills, ha
   return (
     <div className="flex flex-col">
       <div className="flex">
-        {inputFields.map((field) => (
+        {inputFields?.map((field) => (
           <div key={field.name} className="mx-5">
             <InputText
               type={field.type}
@@ -108,10 +108,10 @@ function WorkExperienceLine({ id, companyName, designation, from, to, skills, ha
       </div>
       <div>
           {
-            skills.length !== 0 && (
+            skills?.length !== 0 && (
               <ul>
                 {
-                  skills.map(skill => (<li key={skill}>{skill}</li>))
+                  skills?.map(skill => (<li key={skill}>{skill}</li>))
                 }
               </ul>
             )
