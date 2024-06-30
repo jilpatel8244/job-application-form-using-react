@@ -1,31 +1,25 @@
 import { useContext } from "react";
 import InputRadio from "../../components/form/InputRadio";
 import { FormContext } from "../../context/FormContext";
+import { languages } from "../../data/data";
 
 function LanguageKnown() {
   const { formData: { languageKnown }, formErrorData, updateFormData } = useContext(FormContext);
   const languageKnownError = formErrorData.languageKnown;
-  const { isAtleastOneLanguageSelected } = formErrorData;
-
-  let languages = Object.keys(languageKnown);
 
   function handleChange(event) {
-    const { name, value, checked } = event.target;
-
+    const { name, checked } = event.target;
+    const [lang, skill] = name.split("_");
+    
     let newLanguageKnown = { ...languageKnown };
 
-    const [lang, skill] = name.split("_");
-
-    if (skill) {
-      newLanguageKnown[lang] = {
-        ...newLanguageKnown[lang],
-        skills: { ...newLanguageKnown[lang].skills, [skill]: checked },
-      };
+    if (checked) {
+      newLanguageKnown[lang] = languageKnown[lang] ? [...languageKnown[lang], skill] : [skill];
     } else {
-      newLanguageKnown[lang] = {
-        ...newLanguageKnown[lang],
-        selected: checked,
-      };
+      newLanguageKnown[lang] = newLanguageKnown[lang].filter(item => item !== skill);
+      if (!newLanguageKnown[lang].length) {
+        delete newLanguageKnown[lang];
+      }
     }
 
     updateFormData({ languageKnown: newLanguageKnown })
@@ -36,18 +30,9 @@ function LanguageKnown() {
       {languages.map((language) => {
         return (
           <div key={language} className="flex items-center p-3 gap-3">
-            <InputRadio
-              type="checkbox"
-              name={language}
-              id={language}
-              className=""
-              label={language}
-              value={language}
-              checked={languageKnown[language].selected}
-              handleChange={handleChange}
-            />
+            <span>{language}</span>
 
-            {["read", "write", "speak"].map((skill) => (
+            {["Read", "Write", "Speak"].map((skill) => (
               <InputRadio
                 key={skill}
                 type="checkbox"
@@ -56,24 +41,17 @@ function LanguageKnown() {
                 className=""
                 label={skill}
                 value={skill}
-                checked={languageKnown[language].skills[skill]}
-                disabled={!languageKnown[language].selected}
+                checked={languageKnown.hasOwnProperty(language) && languageKnown[language].includes(skill)}
                 handleChange={handleChange}
               />
             ))}
-
-            <div className={`${languageKnownError[language].errorStatus ? '' : 'hidden'}`}>
-              <span className="text-red-600">
-                {languageKnownError[language].title}
-              </span>
-            </div>
           </div>
         );
       })}
 
-      <div className={`${!isAtleastOneLanguageSelected?.status ? '' : 'hidden'}`}>
+      <div className={`${!languageKnownError?.errorStatus && 'hidden'}`}>
         <span className="text-red-600">
-          {isAtleastOneLanguageSelected?.title}
+          {languageKnownError?.title}
         </span>
       </div>
     </div>

@@ -99,7 +99,7 @@ function WorkExperienceLine({ id, companyName, designation, from, to, skills, wo
           </svg>
       </div>
       {
-        isSkillSectionOpen && (<WorkExpDropDown id={id} skills={skills} />)
+        isSkillSectionOpen && (<WorkExpDropDown id={id} skills={skills} errorObj={workExperiencesError[`skills_${id}`]} />)
       }
     </div>
   );

@@ -3,7 +3,7 @@ import { predefinedSkillsList } from "../../data/data";
 import { FormContext } from "../../context/FormContext";
 import crossWhite from '../../assets/x-thin-svgrepo-com (2).svg';
 
-function WorkExpDropDown({ id, skills }) {
+function WorkExpDropDown({ id, skills, errorObj }) {
   const { formData: { workExperiences }, formErrorData, updateFormData } = useContext(FormContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -29,8 +29,6 @@ function WorkExpDropDown({ id, skills }) {
     });
 
     updateFormData({ workExperiences: updatedWorkExperiences });
-    // inputElement.current.blur();
-
     setSearchTerm('');
 
     let newOptions = options.filter((option) => option != skill);
@@ -47,10 +45,7 @@ function WorkExpDropDown({ id, skills }) {
     });
 
     updateFormData({ workExperiences: updatedWorkExperiences });
-
     setOptions([...options, removeSkill]);
-
-    console.log(workExperiences);
   }
 
   function handleCreateOption() {
@@ -162,6 +157,11 @@ function WorkExpDropDown({ id, skills }) {
             </ul>
           )
         }
+      </div>
+      <div className={`${errorObj?.errorStatus ? '' : 'hidden'}`}>
+        <span className="text-red-600">
+          {errorObj?.title}
+        </span>
       </div>
     </div>
   );

@@ -1,24 +1,22 @@
 import { useContext } from "react";
 import InputRadio from "../../components/form/InputRadio";
 import { FormContext } from "../../context/FormContext";
+import { technologies } from "../../data/data";
 
 function TechnologyKnown() {
   const {formData: {technologyKnown}, formErrorData, updateFormData} = useContext(FormContext);
   const technologyKnownError = formErrorData.technologyKnown;
-  const { isAtleastOneTechSelected } = formErrorData;
-
-  let technologies = Object.keys(technologyKnown);
 
   function handleChange(event) {
-    const { name, value, type, checked } = event.target;
+    const { name, checked } = event.target;
+    const [tech, level] = name.split("_");
 
     let newTechnologyKnown = { ...technologyKnown };
 
-    if (type === "checkbox") {
-      newTechnologyKnown[name].selected = checked;
-    } else if (type === "radio") {
-      const [tech, level] = name.split("_");
-      newTechnologyKnown[tech].level = level;
+    if (checked) {
+      newTechnologyKnown[tech] = level
+    } else {
+      delete newTechnologyKnown[tech];
     }
 
     updateFormData({ technologyKnown: newTechnologyKnown });
@@ -30,16 +28,7 @@ function TechnologyKnown() {
         return (
           <div key={technology} className="flex flex-col">
             <div className="flex items-center p-3 gap-3">
-            <InputRadio
-              type="checkbox"
-              name={technology}
-              id={technology}
-              className=""
-              label={technology}
-              value={technology}
-              checked={technologyKnown[technology].selected}
-              handleChange={handleChange}
-            />
+            <span>{technology}</span>
 
             {["Beginer", "Mediator", "Expert"].map((level) => (
               <InputRadio
@@ -50,24 +39,18 @@ function TechnologyKnown() {
                 className=""
                 label={level}
                 value={level}
-                checked={technologyKnown[technology].level === level}
-                disabled={!technologyKnown[technology].selected}
+                checked={technologyKnown.hasOwnProperty(technology) && technologyKnown[technology] === level}
                 handleChange={handleChange}
               />
             ))}
-            </div>
-            <div className={`${technologyKnownError[technology].errorStatus ? '' : 'hidden'}`}>
-              <span className="text-red-600">
-                {technologyKnownError[technology].title}
-              </span>
             </div>
           </div>
         );
       })}
 
-      <div className={`${!isAtleastOneTechSelected?.status ? '' : 'hidden'}`}>
+      <div className={`${!technologyKnownError?.errorStatus && 'hidden'}`}>
         <span className="text-red-600">
-          {isAtleastOneTechSelected?.title}
+          {technologyKnownError?.title}
         </span>
       </div>
     </div>

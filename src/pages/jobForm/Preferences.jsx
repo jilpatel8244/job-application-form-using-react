@@ -22,7 +22,7 @@ function Preferences() {
     <div className="max-w-[50%] w-[50%]">
       <div className="grid md:grid-cols-2 md:gap-6">
         <InputText
-          type="text"
+          type="number"
           name="currentCTC"
           id="currentCTC"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -33,7 +33,7 @@ function Preferences() {
           errorObj={preferencesError.currentCTC}
         />
         <InputText
-          type="text"
+          type="number"
           name="expectedCTC"
           id="expectedCTC"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -46,7 +46,7 @@ function Preferences() {
       </div>
       <div className="grid md:grid-cols-2 md:gap-6">
         <InputText
-          type="text"
+          type="number"
           name="noticePeriod"
           id="noticePeriod"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

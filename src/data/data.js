@@ -1,35 +1,69 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const stepDetails = [
-  {
-    stepNumber: 1,
+// const stepDetails = [
+//   {
+//     stepNumber: 1,
+//     title: "Basic Details",
+//   },
+//   {
+//     stepNumber: 2,
+//     title: "Education Details",
+//   },
+//   {
+//     stepNumber: 3,
+//     title: "Technology Known",
+//   },
+//   {
+//     stepNumber: 4,
+//     title: "Language Known",
+//   },
+//   {
+//     stepNumber: 5,
+//     title: "Work Experience",
+//   },
+//   {
+//     stepNumber: 6,
+//     title: "Reference Details",
+//   },
+//   {
+//     stepNumber: 7,
+//     title: "Preferences",
+//   },
+// ];
+
+const stepDetails = {
+  1: {
     title: "Basic Details",
+    name: "basicDetails"
   },
-  {
-    stepNumber: 2,
+  2: {
     title: "Education Details",
+    name: "educationDetails"
   },
-  {
+  3: {
     stepNumber: 3,
     title: "Technology Known",
+    name: "technologyKnown"
   },
-  {
+  4: {
     stepNumber: 4,
     title: "Language Known",
+    name: "languageKnown"
   },
-  {
-    stepNumber: 5,
+  5: {
     title: "Work Experience",
+    name: "workExperiences"
   },
-  {
-    stepNumber: 6,
+  6: {
     title: "Reference Details",
+    name: "referenceDetails"
   },
-  {
-    stepNumber: 7,
+  7: {
     title: "Preferences",
+    name: "preferences"
   },
-];
+};
+
 
 const stateData = [
   {
@@ -96,19 +130,9 @@ const officeLocations = [
   },
 ];
 
-const technologyKnown = {
-  php: { selected: false, level: "" },
-  mysql: { selected: false, level: "" },
-  node: { selected: false, level: "" },
-  react: { selected: false, level: "" }
-}
+const technologies = [ 'php', 'mysql', 'node', 'react' ];
 
-const languageKnown = {
-  hindi: { selected: false, skills: { read: false, write: false, speak: false } },
-  gujarati: { selected: false, skills: { read: false, write: false, speak: false } },
-  english: { selected: false, skills: { read: false, write: false, speak: false } },
-  spanish: { selected: false, skills: { read: false, write: false, speak: false } },
-}
+const languages = [ 'hindi', 'gujarati', 'english', 'spanish']
 
 const initialFormData = {
   id: uuidv4(),
@@ -149,8 +173,8 @@ const initialFormData = {
       percentage: "",
     },
   },
-  technologyKnown: technologyKnown,
-  languageKnown: languageKnown,
+  technologyKnown: {},
+  languageKnown: {},
   workExperiences: [
     {
       id: "1",
@@ -279,49 +303,13 @@ const initialFormErrorData = {
       },
     },
   },
-  isAtleastOneTechSelected: {
-    status: true,
-    title: ""
-  },
-  isAtleastOneLanguageSelected: {
-    status: true,
-    title: ""
-  },
   technologyKnown: {
-    php: {
-      errorStatus: false,
-      title: ""
-    },
-    mysql: {
-      errorStatus: false,
-      title: ""
-    },
-    node: {
-      errorStatus: false,
-      title: ""
-    },
-    react: {
-      errorStatus: false,
-      title: ""
-    }
+    errorStatus: false,
+    title: ""
   },
   languageKnown: {
-    hindi: {
-      errorStatus: false,
-      title: ""
-    },
-    gujarati: {
-      errorStatus: false,
-      title: ""
-    },
-    english: {
-      errorStatus: false,
-      title: ""
-    },
-    spanish: {
-      errorStatus: false,
-      title: ""
-    },
+    errorStatus: false,
+    title: ""
   },
   workExperiences: {},
   referenceDetails: {},
@@ -353,9 +341,9 @@ export {
   cityData,
   departmentData,
   officeLocations,
-  technologyKnown,
-  languageKnown,
   initialFormData,
   initialFormErrorData,
-  predefinedSkillsList
+  predefinedSkillsList,
+  technologies,
+  languages
 };
