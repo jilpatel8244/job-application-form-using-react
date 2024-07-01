@@ -15,7 +15,7 @@ function App() {
       <FormProvider>
         <AlertProvider>
           <BrowserRouter>
-            <ErrorBoundary>
+            <ErrorBoundary fallback={<h1>Opps... Something Went Wrong</h1>}>
               <Suspense fallback={<Loader />}>
                 <Routes>
                   <Route>

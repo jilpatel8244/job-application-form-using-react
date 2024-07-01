@@ -171,10 +171,10 @@ export function validatePreferences(preferences) {
   let validate = true;
 
   formPreferencesFields.forEach((field) => {
+    let nameOfTheField = convertCamelCaseToTitleCase(field.name);
     let value = preferences[field.name];
 
     let errorStatus = false;
-    let fieldName = field.name;
     let title;
 
     field.rules.forEach((rule) => {
@@ -184,17 +184,17 @@ export function validatePreferences(preferences) {
       ) {
         validate = false;
         errorStatus = true;
-        title = "field is required !";
+        title = `${nameOfTheField} is required !`;
       }
 
       if (rule === "number" && value && !isNumber(value)) {
         validate = false;
         errorStatus = true;
-        title = `${field.name} must be a number`;
+        title = `${nameOfTheField} must be a number`;
       }
     });
 
-    errorsObj[fieldName] = {
+    errorsObj[field.name] = {
       errorStatus: errorStatus,
       title: title,
     };

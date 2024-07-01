@@ -187,7 +187,7 @@ function JobForm() {
       </div>
       {isPopupOpen && (
         <Suspense fallback={<Loader />}>
-          <ErrorPopup currentStep={currentStep} onClose={handleClosePopup} />
+          <ErrorPopup currentStep={currentStep} onClose={handleClosePopup}  />
         </Suspense>
       )}
     </div>
