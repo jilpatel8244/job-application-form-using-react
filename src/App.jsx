@@ -15,12 +15,12 @@ function App() {
       <FormProvider>
         <AlertProvider>
           <BrowserRouter>
-            <ErrorBoundary fallback={<h1>Opps... Something Went Wrong</h1>}>
+            {/* <ErrorBoundary fallback={<h1>Opps... Something Went</h1>}> */}
               <Suspense fallback={<Loader />}>
                 <Routes>
                   <Route>
                     <Route path="/" element={<UsersList />} />
-                    <Route path="/add-application" element={<JobForm />} />
+                    <Route path="/add-application" element={<> <ErrorBoundary fallback={<h1>Opps... Something Went</h1>}><JobForm /></ErrorBoundary></>} />
                     <Route
                       path="/update-application/:id"
                       element={<JobForm />}
@@ -28,7 +28,7 @@ function App() {
                   </Route>
                 </Routes>
               </Suspense>
-            </ErrorBoundary>
+            {/* </ErrorBoundary> */}
           </BrowserRouter>
         </AlertProvider>
       </FormProvider>

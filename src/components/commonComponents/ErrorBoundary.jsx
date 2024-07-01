@@ -1,23 +1,33 @@
 import React from "react";
+import ErrorPopup from "./ErrorPopup";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error) {
-    console.log(error);
-    return { hasError: true };
-  }
 
   componentDidCatch(error, errorInfo) {
-    console.error("Error caught by Error Boundary:", error, errorInfo);
+    this.setState({
+      hasError: true,
+      error: error
+    })
+  }
+
+  onClose = () => {
+    this.setState({
+      hasError: false,
+      error: null
+    })
   }
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback;
+      console.log("here");
+      return (
+        <ErrorPopup error={this.state.error} onClose={this.onClose.bind(this)}/>
+      )
     }
 
     return this.props.children;

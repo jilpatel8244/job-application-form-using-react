@@ -45,6 +45,8 @@ function JobForm() {
   const [validateOnChange, setValidateOnChange] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  const [modalError,setModalError] = useState(null);
+
   useEffect(() => {
     if (id) {
       let data = getDataById(id);
@@ -53,6 +55,12 @@ function JobForm() {
       setFormData(initialFormData);
     }
   }, []);
+
+  useEffect(()=>{
+    if(modalError){
+      throw modalError;
+    }
+  },[modalError])
 
   useEffect(() => {
     if (validateOnChange) {
@@ -118,6 +126,7 @@ function JobForm() {
       }
     } else {
       setIsPopupOpen(true);
+      setModalError(formErrorData.basicDetails);
     }
   }
 
@@ -177,11 +186,11 @@ function JobForm() {
           />
         </form>
       </div>
-      {isPopupOpen && (
+      {/* {isPopupOpen && (
         <Suspense fallback={<Loader />}>
           <ErrorPopup currentStep={currentStep} onClose={handleClosePopup}  />
         </Suspense>
-      )}
+      )} */}
     </div>
   );
 }
