@@ -7,6 +7,7 @@ import {
   validateEmail,
   validatePhone,
 } from "./formValidationData";
+import convertCamelCaseToTitleCase from "../utiils/convertCamelCaseToTitleCase";
 
 export function validateBasicDetails(basicDetails) {
   let errorsObj = {};
@@ -16,7 +17,7 @@ export function validateBasicDetails(basicDetails) {
     let value = basicDetails[field.name];
 
     let errorStatus = false;
-    let fieldName = field.name;
+    let nameOfTheField = convertCamelCaseToTitleCase(field.name);
     let title = "";
 
     field.rules.forEach((rule) => {
@@ -26,41 +27,41 @@ export function validateBasicDetails(basicDetails) {
       ) {
         validate = false;
         errorStatus = true;
-        title = "field is required !";
+        title = `${nameOfTheField} is required !`;
       }
 
       if (rule === "email" && value && !validateEmail(value)) {
         validate = false;
         errorStatus = true;
-        title = `Please enter valid ${field.name} !`;
+        title = `Please enter valid ${nameOfTheField} !`;
       }
 
       if (rule === "phone" && value && !validatePhone(value)) {
         validate = false;
         errorStatus = true;
-        title = `Please enter valid ${field.name} !`;
+        title = `Please enter valid ${nameOfTheField} !`;
       }
 
       if (rule === "string" && value && !isString(value)) {
         validate = false;
         errorStatus = true;
-        title = `${field.name} must be a string!`;
+        title = `${nameOfTheField} must be a string!`;
       }
 
       if (rule === "dateToday" && value && new Date(value) > new Date()) {
         validate = false;
         errorStatus = true;
-        title = `${field.name} must not greater than today!`;
+        title = `${nameOfTheField} must not greater than today!`;
       }
 
       if (rule === "maxLength" && value && value.trim().length > 20) {
         validate = false;
         errorStatus = true;
-        title = `${field.name} must be less than 20 characters!`;
+        title = `${nameOfTheField} must be less than 20 characters!`;
       }
     });
 
-    errorsObj[fieldName] = {
+    errorsObj[field.name] = {
       errorStatus: errorStatus,
       title: title,
     };
