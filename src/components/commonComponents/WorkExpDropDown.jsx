@@ -4,7 +4,7 @@ import { FormContext } from "../../context/FormContext";
 import crossWhite from '../../assets/x-thin-svgrepo-com (2).svg';
 
 function WorkExpDropDown({ id, skills, errorObj }) {
-  const { formData: { workExperiences }, formErrorData, updateFormData } = useContext(FormContext);
+  const { formData: { workExperiences }, updateFormData } = useContext(FormContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState(() => {

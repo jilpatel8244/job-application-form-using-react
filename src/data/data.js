@@ -132,7 +132,38 @@ const officeLocations = [
 
 const technologies = [ 'php', 'mysql', 'node', 'react' ];
 
-const languages = [ 'hindi', 'gujarati', 'english', 'spanish']
+const languages = [ 'hindi', 'gujarati', 'english', 'spanish'];
+
+const relations = [
+  {
+    value: "",
+    label: "Select Relation",
+  },
+  {
+    value: "brother",
+    label: "Brother",
+  },
+  {
+    value: "sister",
+    label: "Sister",
+  },
+  {
+    value: "husband",
+    label: "Husband",
+  },
+  {
+    value: "mother",
+    label: "Mother",
+  },
+  {
+    value: "father",
+    label: "Father",
+  },
+  {
+    value: "custom",
+    label: "Custom",
+  },
+];
 
 const initialFormData = {
   id: uuidv4(),
@@ -189,7 +220,12 @@ const initialFormData = {
     {
       id: "1",
       name: "",
-      phoneNumber: "",
+      phoneNumber: [
+        {
+          id: "1",
+          value: ""
+        }
+      ],
       relation: "",
     },
   ],
@@ -345,5 +381,6 @@ export {
   initialFormErrorData,
   predefinedSkillsList,
   technologies,
-  languages
+  languages,
+  relations
 };

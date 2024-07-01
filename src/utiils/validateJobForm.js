@@ -209,7 +209,6 @@ export function validateWorkExperience(workExperiences) {
   let id;
 
   workExperiences.forEach((experience) => {
-    // Check if any field except 'id' is filled
     const isFilled = Object.keys(experience).some((key) => {
       const value = experience[key];
       if (key === "id") {
@@ -330,31 +329,56 @@ export function validateReferenceDetails(referenceDetails) {
         id = value;
         return false;
       }
+      if (Array.isArray(value)) {
+        return value.some((phn) => phn.value !== "");
+      }
       return value.trim() !== "";
     });
 
+    console.log(isFilled);
+
     if (isFilled) {
       for (const [key, value] of Object.entries(singleReferenceDetail)) {
-        if (
-          (Array.isArray(value) && !value.length) ||
-          (!Array.isArray(value) && !value.trim())
-        ) {
-          validate = false;
-          errorsObj = {
-            ...errorsObj,
-            [`${key}_${id}`]: {
-              errorStatus: true,
-              title: "required",
-            },
-          };
-        } else {
-          errorsObj = {
-            ...errorsObj,
-            [`${key}_${id}`]: {
-              errorStatus: false,
-              title: "",
-            },
-          };
+        if (Array.isArray(value)) {
+          value.forEach((phn) => {
+            if (!phn.value) {
+              validate = false;
+              errorsObj = {
+                ...errorsObj,
+                [`${key}_${id}_${phn.id}`]: {
+                  errorStatus: true,
+                  title: "required",
+                },
+              };
+            } else {
+              errorsObj = {
+                ...errorsObj,
+                [`${key}_${id}_${phn.id}`]: {
+                  errorStatus: false,
+                  title: "",
+                },
+              };
+            }
+          })
+        } else if (!Array.isArray(value)) {
+          if (!value.trim()) {
+            validate = false;
+            errorsObj = {
+              ...errorsObj,
+              [`${key}_${id}`]: {
+                errorStatus: true,
+                title: "required",
+              },
+            };
+          } else {
+            errorsObj = {
+              ...errorsObj,
+              [`${key}_${id}`]: {
+                errorStatus: false,
+                title: "",
+              },
+            };
+          }
         }
       }
     }
@@ -388,19 +412,22 @@ export function validateReferenceDetails(referenceDetails) {
       };
     }
 
-    if (
-      singleReferenceDetail.phoneNumber &&
-      !validatePhone(singleReferenceDetail.phoneNumber)
-    ) {
-      validate = false;
-      errorsObj = {
-        ...errorsObj,
-        [`phoneNumber_${id}`]: {
-          errorStatus: true,
-          title: "Please enter valid phone number",
-        },
-      };
-    }
+    singleReferenceDetail?.phoneNumber.forEach((phn) => {
+      if (
+        phn.value &&
+        !validatePhone(phn.value)
+      ) {
+        validate = false;
+        errorsObj = {
+          ...errorsObj,
+          [`phoneNumber_${id}_${phn.id}`]: {
+            errorStatus: true,
+            title: "Please enter valid phone number",
+          },
+        };
+      }
+    })
+
   });
 
   return { errorsObj, validate };

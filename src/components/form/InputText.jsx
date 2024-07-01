@@ -1,4 +1,4 @@
-function InputText({ type, name, id, className, placeholder, label, value, handleChange, errorObj }) {
+function InputText({ type, name, id, className, placeholder, label, value, handleChange, errorObj, children }) {
   return (
     <div className="mb-5">
       <label
@@ -16,6 +16,7 @@ function InputText({ type, name, id, className, placeholder, label, value, handl
         className={className}
         placeholder={placeholder}
       />
+      {children}
       <div className={`${errorObj?.errorStatus ? '' : 'hidden'}`}>
         <span className="text-red-600">
           {errorObj?.title}

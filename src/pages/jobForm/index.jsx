@@ -36,7 +36,7 @@ const ReferenceDetails = lazy(() => import("./ReferenceDetails"));
 const Preferences = lazy(() => import("./Preferences"));
 
 function JobForm() {
-  const [currentStep, setCurrentStep] = useState(5);
+  const [currentStep, setCurrentStep] = useState(1);
   const { id } = useParams();
   const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
@@ -96,9 +96,6 @@ function JobForm() {
         break;
     }
 
-    console.log(errorData);
-    console.log(formErrorData);
-
     setFormErrorData((prevData) => {
       return {
         ...prevData,
@@ -130,16 +127,15 @@ function JobForm() {
 
   function handleSubmit() {
     id ? updateDataById(id, formData) : addData(formData);
-
     toast.success(
-      `Your Application ${id ? "Updated" : "Created"} Successfully !`,
-      {
-        position: "top-center",
-      }
+      `Your Application ${id ? "Updated" : "Created"} Successfully !`, {position: "top-center"}
     );
-
     navigate("/");
   }
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   let component = useMemo(() => {
     switch (currentStep) {
@@ -162,10 +158,6 @@ function JobForm() {
         break;
     }
   }, [currentStep]);
-
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-  };
 
   return (
     <div>
