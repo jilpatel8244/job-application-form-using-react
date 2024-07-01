@@ -48,10 +48,22 @@ export function validateBasicDetails(basicDetails) {
         title = `${nameOfTheField} must be a string!`;
       }
 
-      if (rule === "dateToday" && value && new Date(value) > new Date()) {
-        validate = false;
-        errorStatus = true;
-        title = `${nameOfTheField} must not greater than today!`;
+      if (rule === "date18" && value) {
+        const now = new Date();
+        const birthDate = new Date(value);
+
+        const age = now.getFullYear() - birthDate.getFullYear();
+        const monthDiff = now.getMonth() - birthDate.getMonth();
+        const dayDiff = now.getDate() - birthDate.getDate();
+
+        if (
+          age < 18 ||
+          (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)))
+        ) {
+          validate = false;
+          errorStatus = true;
+          title = `You are not eligible to fill the form as you are under 18`;
+        }
       }
 
       if (rule === "maxLength" && value && value.trim().length > 20) {
@@ -359,7 +371,7 @@ export function validateReferenceDetails(referenceDetails) {
                 },
               };
             }
-          })
+          });
         } else if (!Array.isArray(value)) {
           if (!value.trim()) {
             validate = false;
@@ -413,10 +425,7 @@ export function validateReferenceDetails(referenceDetails) {
     }
 
     singleReferenceDetail?.phoneNumber.forEach((phn) => {
-      if (
-        phn.value &&
-        !validatePhone(phn.value)
-      ) {
+      if (phn.value && !validatePhone(phn.value)) {
         validate = false;
         errorsObj = {
           ...errorsObj,
@@ -426,8 +435,7 @@ export function validateReferenceDetails(referenceDetails) {
           },
         };
       }
-    })
-
+    });
   });
 
   return { errorsObj, validate };

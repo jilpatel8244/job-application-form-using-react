@@ -5,7 +5,7 @@ const formBasicDetailsFields = [
     { name: "phoneNumber", rules: ["required", "phone"] },
     { name: "designation", rules: ["required", "string", "maxLength"] },
     { name: "gender", rules: ["required"] },
-    { name: "dob", rules: ["required", "dateToday"] }
+    { name: "dob", rules: ["required", "date18"] }
 ];
 
 const formPreferencesFields = [

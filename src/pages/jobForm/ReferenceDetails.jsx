@@ -116,8 +116,11 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
   function deletePhoneNumber(deletedPhnId) {
     const updatedReferenceDetails = referenceDetails?.map(singleReference => {
       if (singleReference.id === id) {
-        let filteredPhoneNumbers = singleReference.phoneNumber.filter((phn) => phn.id !== deletedPhnId);
-        return { ...singleReference, phoneNumber: filteredPhoneNumbers };
+        if (singleReference.phoneNumber.length > 1) {
+          let filteredPhoneNumbers = singleReference.phoneNumber.filter((phn) => phn.id !== deletedPhnId);
+          return { ...singleReference, phoneNumber: filteredPhoneNumbers };
+        }
+        return singleReference;
       }
       return singleReference;
     });
@@ -127,7 +130,7 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
   }
 
   return (
-    <div className="flex">
+    <div className="flex border border-gray-300 p-3 m-3 rounded-lg">
       <div className="mx-5">
         <InputText
           type="text"
@@ -172,7 +175,7 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
       </div>
       <div className="mx-5">
         {
-          phoneNumber.map((phn) => (
+          phoneNumber?.map((phn) => (
             <InputText
               key={phn.id}
               type="number"
@@ -185,12 +188,12 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
               handleChange={handleChange}
               errorObj={referenceDetailsError[`phoneNumber_${id}_${phn.id}`]}
             >
-              <button type="button" onClick={() => { deletePhoneNumber(phn.id) }}>delete contact</button>
+              <button className="bg-red-500 text-white mt-1 px-2 py-1 rounded-lg" type="button" onClick={() => { deletePhoneNumber(phn.id) }}>delete contact</button>
             </InputText>
 
           ))
         }
-        <button type="button" onClick={() => { addNewPhoneNumberField() }}>Add another phone number</button>
+        <button className="bg-yellow-500 px-2 py-1 rounded-lg" type="button" onClick={() => { addNewPhoneNumberField() }}>Add another phone number</button>
       </div>
       <button type="button" onClick={() => { deleteReference(id) }}>
         delete

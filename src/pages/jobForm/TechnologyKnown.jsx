@@ -28,7 +28,7 @@ function TechnologyKnown() {
         return (
           <div key={technology} className="flex flex-col">
             <div className="flex items-center p-3 gap-3">
-            <span>{technology}</span>
+            <span className="font-bold">{technology}</span>
 
             {["Beginer", "Mediator", "Expert"].map((level) => (
               <InputRadio
@@ -48,7 +48,7 @@ function TechnologyKnown() {
         );
       })}
 
-      <div className={`${!technologyKnownError?.errorStatus && 'hidden'}`}>
+      <div className={`text-center ${!technologyKnownError?.errorStatus && 'hidden'}`}>
         <span className="text-red-600">
           {technologyKnownError?.title}
         </span>

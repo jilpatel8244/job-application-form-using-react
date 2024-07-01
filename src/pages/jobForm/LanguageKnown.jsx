@@ -30,7 +30,7 @@ function LanguageKnown() {
       {languages.map((language) => {
         return (
           <div key={language} className="flex items-center p-3 gap-3">
-            <span>{language}</span>
+            <span className="font-bold">{language}</span>
 
             {["Read", "Write", "Speak"].map((skill) => (
               <InputRadio
@@ -49,7 +49,7 @@ function LanguageKnown() {
         );
       })}
 
-      <div className={`${!languageKnownError?.errorStatus && 'hidden'}`}>
+      <div className={`text-center ${!languageKnownError?.errorStatus && 'hidden'}`}>
         <span className="text-red-600">
           {languageKnownError?.title}
         </span>

@@ -64,7 +64,6 @@ const stepDetails = {
   },
 };
 
-
 const stateData = [
   {
     label: "Gujarat",
