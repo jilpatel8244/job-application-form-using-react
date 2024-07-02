@@ -2,13 +2,19 @@ import { cityData, stateData } from "../../data/data";
 import InputRadio from "../../components/form/InputRadio";
 import InputText from "../../components/form/InputText";
 import SelectComponent from "../../components/form/SelectComponent";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { FormContext } from "../../context/FormContext";
 import crossWhite from "../../assets/images/x-thin-svgrepo-com (2).svg";
 
 function BasicDetails() {
-  const { formData: { basicDetails }, formErrorData, setFormErrorData, updateFormData } = useContext(FormContext);
+  const { formData: { basicDetails }, formErrorData, setFormErrorData, updateFormData, isPopupOpen } = useContext(FormContext);
   const basicDetailsError = formErrorData.basicDetails;
+
+  useEffect(() => {
+    if (isPopupOpen) {
+      throw formErrorData.basicDetails
+    }
+  }, [isPopupOpen])
 
   function handleChange(event) {
     const { name, value } = event.target;

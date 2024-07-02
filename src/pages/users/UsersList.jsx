@@ -8,7 +8,6 @@ function UsersList() {
   const Alert = useAlert();
 
   async function deleteHandler(id) {
-    console.log(id);
 
     const result = await Alert({
       title: "Are You Sure?",

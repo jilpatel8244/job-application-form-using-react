@@ -6,8 +6,14 @@ import { relations } from "../../data/data";
 import SelectComponent from "../../components/form/SelectComponent";
 
 function ReferenceDetails() {
-  const { formData: { referenceDetails }, formErrorData, updateFormData } = useContext(FormContext);
+  const { formData: { referenceDetails }, formErrorData, updateFormData, isPopupOpen } = useContext(FormContext);
   const referenceDetailsError = formErrorData.referenceDetails;
+
+  useEffect(() => {
+    if (isPopupOpen) {
+      throw formErrorData.referenceDetails
+    }
+  }, [isPopupOpen])
 
   function handleChange(event) {
     const { name, value, id } = event.target;
@@ -54,11 +60,7 @@ function ReferenceDetails() {
       updateFormData({ referenceDetails: filteredReference })
     }
   }
-
-  useEffect(() => {
-    console.log(referenceDetails);
-  })
-
+  
   return (
     <div>
       <button
@@ -185,7 +187,7 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
         }
 
       </div>
-      <div className="mx-5">
+      <div className="mx-5 h-[250px] overflow-auto">
         {
           phoneNumber?.map((phn) => (
             <InputText

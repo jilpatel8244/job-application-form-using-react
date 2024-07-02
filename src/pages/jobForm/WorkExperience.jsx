@@ -6,8 +6,14 @@ import WorkExpDropDown from "../../components/commonComponents/WorkExpDropDown";
 import { useParams } from "react-router-dom";
 
 function WorkExperience() {
-  const { formData: { workExperiences }, formErrorData, updateFormData } = useContext(FormContext);
+  const { formData: { workExperiences }, formErrorData, updateFormData, isPopupOpen } = useContext(FormContext);
   const workExperiencesError = formErrorData.workExperiences;
+
+  useEffect(() => {
+    if (isPopupOpen) {
+      throw formErrorData.workExperiences
+    }
+  }, [isPopupOpen])
 
   function handleChange(event) {
     const { name, value, id } = event.target;
@@ -78,27 +84,27 @@ function WorkExperienceLine({ id, companyName, designation, from, to, skills, wo
   return (
     <div className="flex flex-col border border-gray-300 p-3 m-3 rounded-lg">
       <div className="flex">
-          {inputFields?.map((field) => (
-            <div key={field.name} className="mx-5">
-              <InputText
-                type={field.type}
-                name={field.name}
-                id={`${field.name}_${id}`}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder=""
-                label={field.label}
-                value={field.name === "companyName" ? companyName : field.name === "designation" ? designation : field.name === "from" ? from : to}
-                handleChange={handleChange}
-                errorObj={workExperiencesError[`${field.name}_${id}`]}
-              />
-            </div>
-          ))}
-          <button className="hover:text-blue-600 h-fit m-auto" type="button" onClick={() => { deleteExperience(id) }}>
-            delete
-          </button>
-          <svg onClick={() => {setIsSkillSectionOpen((prev) => !prev)}} data-accordion-icon className={`${isSkillSectionOpen ? 'rotate-0' : 'rotate-180'} w-3 h-3 shrink-0 hover:text-blue-600`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
-          </svg>
+        {inputFields?.map((field) => (
+          <div key={field.name} className="mx-5">
+            <InputText
+              type={field.type}
+              name={field.name}
+              id={`${field.name}_${id}`}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder=""
+              label={field.label}
+              value={field.name === "companyName" ? companyName : field.name === "designation" ? designation : field.name === "from" ? from : to}
+              handleChange={handleChange}
+              errorObj={workExperiencesError[`${field.name}_${id}`]}
+            />
+          </div>
+        ))}
+        <button className="hover:text-blue-600 h-fit m-auto" type="button" onClick={() => { deleteExperience(id) }}>
+          delete
+        </button>
+        <svg onClick={() => { setIsSkillSectionOpen((prev) => !prev) }} data-accordion-icon className={`${isSkillSectionOpen ? 'rotate-0' : 'rotate-180'} w-3 h-3 shrink-0 hover:text-blue-600`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
+        </svg>
       </div>
       {
         isSkillSectionOpen && (<WorkExpDropDown id={id} skills={skills} errorObj={workExperiencesError[`skills_${id}`]} />)

@@ -1,10 +1,16 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import InputText from "../../components/form/InputText";
 import { FormContext } from "../../context/FormContext";
 
 function EducationDetails() {
-  const {formData: {educationDetails}, formErrorData, updateFormData} = useContext(FormContext);
+  const {formData: {educationDetails}, formErrorData, updateFormData, isPopupOpen} = useContext(FormContext);
   const educationDetailsError = formErrorData.educationDetails;
+
+  useEffect(() => {
+    if (isPopupOpen) {
+      throw formErrorData.educationDetails
+    }
+  }, [isPopupOpen])
 
   function handleChange(event) {
     const {name, value} = event.target;

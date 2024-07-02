@@ -5,14 +5,14 @@ import { FormContext } from "../../context/FormContext";
 import convertCamelCaseToTitleCase from "../../utiils/convertCamelCaseToTitleCase";
 import getOrdinalSuffix from "../../utiils/getOrdinalSuffix";
 
-function ErrorPopup({ currentStep, onClose }) {
-  const { formErrorData } = useContext(FormContext);
+function ErrorPopup({ error, onClose }) {
+  const { currentStep } = useContext(FormContext);
 
   let errorMessages = [];
   switch (currentStep) {
     case 1:
     case 7:
-      errorMessages = Object.entries(formErrorData[stepDetails[currentStep]?.name]).map(
+      errorMessages = Object.entries(error).map(
         ([key, value]) => {
           return (
             value?.errorStatus && (
@@ -25,7 +25,7 @@ function ErrorPopup({ currentStep, onClose }) {
       );
       break;
     case 2:
-      errorMessages = Object.entries(formErrorData.educationDetails).map(
+      errorMessages = Object.entries(error).map(
         ([educationLevel, details]) => {
           return Object.entries(details).map(([key, value]) => {
             return (
@@ -43,10 +43,10 @@ function ErrorPopup({ currentStep, onClose }) {
       break;
     case 3:
     case 4:
-      formErrorData[stepDetails[currentStep]?.name]?.errorStatus &&
+      error?.errorStatus &&
         errorMessages.push(
           <li key={1} className="text-red-600">
-            {formErrorData[stepDetails[currentStep]?.name]?.title}
+            {error?.title}
           </li>
         );
       break;
@@ -55,8 +55,8 @@ function ErrorPopup({ currentStep, onClose }) {
       let idToIndexMap = {};
 
       // Extract field names and ids
-      for (const key in formErrorData[stepDetails[currentStep]?.name]) {
-        if (formErrorData[stepDetails[currentStep]?.name][key].errorStatus) {
+      for (const key in error) {
+        if (error[key].errorStatus) {
           const [fieldName, id] = key.split("_");
 
           // Map each unique id to a work experience index
@@ -74,7 +74,7 @@ function ErrorPopup({ currentStep, onClose }) {
               className="text-red-600"
             >{`In ${ordinalIndex} ${stepDetails[currentStep]?.title}, ${convertCamelCaseToTitleCase(
               fieldName
-            )} is ${formErrorData[stepDetails[currentStep]?.name][key].title}`}</li>
+            )} is ${error[key].title}`}</li>
           );
         }
       }

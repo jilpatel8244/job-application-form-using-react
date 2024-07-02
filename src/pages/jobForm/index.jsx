@@ -4,7 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  // useTransition
 } from "react";
 import ProgressBar from "./ProgressBar";
 import { toast } from "react-toastify";
@@ -23,10 +23,8 @@ import {
   validateWorkExperience,
 } from "../../utiils/validateJobForm";
 import { stepDetails } from "../../data/data";
+import ErrorBoundary from "../../components/commonComponents/ErrorBoundary";
 
-const ErrorPopup = lazy(() =>
-  import("../../components/commonComponents/ErrorPopup")
-);
 const BasicDetails = lazy(() => import("./BasicDetails"));
 const EducationDetails = lazy(() => import("./EducationalDetails"));
 const TechnologyKnown = lazy(() => import("./TechnologyKnown"));
@@ -36,14 +34,13 @@ const ReferenceDetails = lazy(() => import("./ReferenceDetails"));
 const Preferences = lazy(() => import("./Preferences"));
 
 function JobForm() {
-  const [currentStep, setCurrentStep] = useState(5);
   const { id } = useParams();
   const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
-  const { formData, formErrorData, setFormData, setFormErrorData } =
+  const { formData, setFormData, setFormErrorData, validateOnChange, setValidateOnChange, currentStep, setCurrentStep, setIsPopupOpen } =
     useContext(FormContext);
-  const [validateOnChange, setValidateOnChange] = useState(false);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  // const [isPending, startTransition] = useTransition();
+
 
   useEffect(() => {
     if (id) {
@@ -107,16 +104,17 @@ function JobForm() {
   }
 
   function nextBtnHandler() {
-    setValidateOnChange(true);
-
     if (validateForm()) {
       if (currentStep === Object.keys(stepDetails)?.length) {
         handleSubmit();
       } else {
         setValidateOnChange(false);
-        setCurrentStep(currentStep + 1);
+        // startTransition(() => {
+          setCurrentStep(currentStep + 1);
+        // })
       }
     } else {
+      setValidateOnChange(true);
       setIsPopupOpen(true);
     }
   }
@@ -128,15 +126,12 @@ function JobForm() {
   function handleSubmit() {
     id ? updateDataById(id, formData) : addData(formData);
     toast.success(
-      `Your Application ${id ? "Updated" : "Created"} Successfully !`, {position: "top-center"}
+      `Your Application ${id ? "Updated" : "Created"} Successfully !`, { position: "top-center" }
     );
-    setFormData(null);
+    setFormData(initialFormData);
+    setCurrentStep(1);
     navigate("/");
   }
-
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-  };
 
   let component = useMemo(() => {
     switch (currentStep) {
@@ -168,12 +163,14 @@ function JobForm() {
       <ProgressBar currentStep={currentStep} />
       <div className="w-full">
         <form>
-          <div className="flex justify-center my-5"> 
-            <Suspense fallback={<Loader />}>
-              {
-                formData && component
-              }
-            </Suspense>
+          <div className="flex justify-center my-5">
+            <ErrorBoundary>
+              <Suspense fallback={<Loader />}>
+                {
+                  component
+                }
+              </Suspense>
+            </ErrorBoundary>
           </div>
           <NavigationBtns
             currentStep={currentStep}
@@ -182,11 +179,6 @@ function JobForm() {
           />
         </form>
       </div>
-      {isPopupOpen && (
-        <Suspense fallback={<Loader />}>
-          <ErrorPopup currentStep={currentStep} onClose={handleClosePopup}  />
-        </Suspense>
-      )}
     </div>
   );
 }

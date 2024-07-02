@@ -1,12 +1,18 @@
 import { departmentData, officeLocations } from "../../data/data";
 import InputText from "../../components/form/InputText";
 import SelectComponent from "../../components/form/SelectComponent";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { FormContext } from "../../context/FormContext";
 
 function Preferences() {
-  const { formData: { preferences }, formErrorData, updateFormData } = useContext(FormContext);
+  const { formData: { preferences }, formErrorData, updateFormData, isPopupOpen } = useContext(FormContext);
   const preferencesError = formErrorData.preferences;
+
+  useEffect(() => {
+    if (isPopupOpen) {
+      throw formErrorData.preferences
+    }
+  }, [isPopupOpen])
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -18,7 +24,7 @@ function Preferences() {
     updateFormData({ preferences: { ...preferences, [name]: newValue } });
   }
 
-  return (  
+  return (
     <div className="max-w-[50%] w-[50%]">
       <div className="grid md:grid-cols-2 md:gap-6">
         <InputText

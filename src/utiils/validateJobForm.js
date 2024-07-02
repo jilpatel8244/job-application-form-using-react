@@ -347,8 +347,6 @@ export function validateReferenceDetails(referenceDetails) {
       return value.trim() !== "";
     });
 
-    console.log(isFilled);
-
     if (isFilled) {
       for (const [key, value] of Object.entries(singleReferenceDetail)) {
         if (Array.isArray(value)) {

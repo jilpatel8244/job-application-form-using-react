@@ -1,11 +1,17 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import InputRadio from "../../components/form/InputRadio";
 import { FormContext } from "../../context/FormContext";
 import { languages } from "../../data/data";
 
 function LanguageKnown() {
-  const { formData: { languageKnown }, formErrorData, updateFormData } = useContext(FormContext);
+  const { formData: { languageKnown }, formErrorData, updateFormData, isPopupOpen } = useContext(FormContext);
   const languageKnownError = formErrorData.languageKnown;
+
+  useEffect(() => {
+    if (isPopupOpen) {
+      throw formErrorData.languageKnown
+    }
+  }, [isPopupOpen])
 
   function handleChange(event) {
     const { name, checked } = event.target;
