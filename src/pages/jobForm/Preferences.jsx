@@ -64,6 +64,7 @@ function Preferences() {
           value={preferences.department}
           handleChange={handleChange}
           errorObj={preferencesError.department}
+          className='w-full'
         />
       </div>
       <SelectComponent

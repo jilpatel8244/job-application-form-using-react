@@ -1,7 +1,7 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { predefinedSkillsList } from "../../data/data";
 import { FormContext } from "../../context/FormContext";
-import crossWhite from "../../assets/x-thin-svgrepo-com (2).svg";
+import crossWhite from "../../assets/images/x-thin-svgrepo-com (2).svg";
 
 function WorkExpDropDown({ id, skills, errorObj }) {
   const { formData: { workExperiences }, updateFormData } = useContext(FormContext);
@@ -11,7 +11,6 @@ function WorkExpDropDown({ id, skills, errorObj }) {
     let userWorkExperience = workExperiences.filter(
       (workExperience) => workExperience.id === id
     );
-    console.log(userWorkExperience[0].skills);
 
     let filteredOptions = predefinedSkillsList.filter((predefinedSkill) => {
       return (
@@ -139,7 +138,6 @@ function WorkExpDropDown({ id, skills, errorObj }) {
             setSearchTerm("");
             setIsOpen(false);
           }}
-          // ref={inputElement}
           value={searchTerm}
           onChange={(e) => onChangeHandler(e)}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

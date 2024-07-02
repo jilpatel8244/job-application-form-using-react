@@ -130,6 +130,7 @@ function JobForm() {
     toast.success(
       `Your Application ${id ? "Updated" : "Created"} Successfully !`, {position: "top-center"}
     );
+    setFormData(null);
     navigate("/");
   }
 
@@ -167,8 +168,12 @@ function JobForm() {
       <ProgressBar currentStep={currentStep} />
       <div className="w-full">
         <form>
-          <div className="flex justify-center my-5">
-            <Suspense fallback={<Loader />}>{component}</Suspense>
+          <div className="flex justify-center my-5"> 
+            <Suspense fallback={<Loader />}>
+              {
+                formData && component
+              }
+            </Suspense>
           </div>
           <NavigationBtns
             currentStep={currentStep}

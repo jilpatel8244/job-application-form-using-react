@@ -4,6 +4,7 @@ import InputText from "../../components/form/InputText";
 import SelectComponent from "../../components/form/SelectComponent";
 import { useContext } from "react";
 import { FormContext } from "../../context/FormContext";
+import crossWhite from "../../assets/images/x-thin-svgrepo-com (2).svg";
 
 function BasicDetails() {
   const { formData: { basicDetails }, formErrorData, setFormErrorData, updateFormData } = useContext(FormContext);
@@ -16,12 +17,14 @@ function BasicDetails() {
 
   function handleFileChange(event) {
     const { name } = event.target;
-    console.log(event.target.files[0]);
 
     let file = event.target.files[0];
     let maxSize = 2 * 1024 * 1024;
 
     if (file) {
+      let errorStatus = false;
+      let title = "";
+
       if (file.size < maxSize) {
         const reader = new FileReader();
 
@@ -31,33 +34,23 @@ function BasicDetails() {
         }
 
         reader.readAsDataURL(file);
-
-        setFormErrorData((prevData) => {
-          return {
-            ...prevData,
-            basicDetails: {
-              ...prevData.basicDetails,
-              'profileImg': {
-                errorStatus: false,
-                title: ""
-              }
-            }
-          }
-        })
       } else {
-        setFormErrorData((prevData) => {
-          return {
-            ...prevData,
-            basicDetails: {
-              ...prevData.basicDetails,
-              'profileImg': {
-                errorStatus: true,
-                title: "file must be less than 2 mb"
-              }
+        errorStatus = true;
+        title = "file must be less than 2 mb";
+        updateFormData({ basicDetails: { ...basicDetails, [name]: "" } })
+      }
+      setFormErrorData((prevData) => {
+        return {
+          ...prevData,
+          basicDetails: {
+            ...prevData.basicDetails,
+            'profileImg': {
+              errorStatus: errorStatus,
+              title: title
             }
           }
-        })
-      }
+        }
+      })
     } else {
       updateFormData({ basicDetails: { ...basicDetails, [name]: "" } })
     }
@@ -168,10 +161,11 @@ function BasicDetails() {
           label="Relationship Status"
           options={[
             { value: "single", label: "Single" },
-            { value: "marrid", label: "Marrid" },
+            { value: "married", label: "Married" },
           ]}
           value={basicDetails.relationshipStatus}
           handleChange={handleChange}
+          className="w-full"
         />
       </div>
 
@@ -183,6 +177,7 @@ function BasicDetails() {
           value={basicDetails.state}
           options={stateData}
           handleChange={handleChange}
+          className="w-full"
         />
         <SelectComponent
           name="city"
@@ -191,6 +186,7 @@ function BasicDetails() {
           value={basicDetails.city}
           options={cityData}
           handleChange={handleChange}
+          className="w-full"
         />
       </div>
 
@@ -207,9 +203,16 @@ function BasicDetails() {
       />
 
       {
-        basicDetails.profileImg && <img src={basicDetails.profileImg} alt="ProfileImg" height={200} width={200} />
+        basicDetails.profileImg && (
+          <div className="relative w-fit">
+            <img src={basicDetails.profileImg} alt="ProfileImg" height={200} width={200} />
+            <img onClick={() => {
+              updateFormData({ basicDetails: { ...basicDetails, profileImg: "" } })
+            }} src={crossWhite} className="bg-black m-2 hover:opacity-100 cursor-pointer h-8 w-8 p-1 rounded-full opacity-50 absolute top-0 right-0" />
+          </div>
+        )
       }
-      <input type="file" name="profileImg" onChange={handleFileChange} />
+      <input type="file" accept="image/png, image/gif, image/jpeg" name="profileImg" onChange={handleFileChange} />
       <div className={`${basicDetailsError.profileImg?.errorStatus ? '' : 'hidden'}`}>
         <span className="text-red-600">
           {basicDetailsError.profileImg?.title}

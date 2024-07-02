@@ -1,8 +1,8 @@
 import React from "react";
 import "../../assets/css/Alert.css";
 import { createPortal } from "react-dom";
-import alertImg from "../../assets/caution.png";
-import successImg from "../../assets/checked.png";
+import alertImg from "../../assets/images/caution.png";
+import successImg from "../../assets/images/checked.png";
 
 const Alert = ({
   title,

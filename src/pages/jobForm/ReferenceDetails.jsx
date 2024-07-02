@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import InputText from "../../components/form/InputText";
 import { v4 as uuidv4 } from 'uuid';
 import { FormContext } from "../../context/FormContext";
@@ -18,7 +18,7 @@ function ReferenceDetails() {
         if (phoneNumberId) {
           let updatedPhoneNumber = reference.phoneNumber.map((phn) => {
             if (phn.id === phoneNumberId) {
-              return {...phn, value: value}
+              return { ...phn, value: value }
             }
             return phn
           });
@@ -31,7 +31,6 @@ function ReferenceDetails() {
     });
 
     updateFormData({ referenceDetails: updatedReferenceDetails });
-    console.log(referenceDetails);
   }
 
   function addAnotherReference() {
@@ -56,6 +55,10 @@ function ReferenceDetails() {
     }
   }
 
+  useEffect(() => {
+    console.log(referenceDetails);
+  })
+
   return (
     <div>
       <button
@@ -78,7 +81,17 @@ export default ReferenceDetails;
 
 function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference, handleChange, referenceDetailsError }) {
   const { formData: { referenceDetails }, updateFormData } = useContext(FormContext);
-  const [isRelationCustom, setIsRelationCustom] = useState();
+  const [isRelationCustom, setIsRelationCustom] = useState(() => {
+    let isSelectedRelationFromOptions = false;
+
+    relations.forEach(predefinedRelation => {
+      if (predefinedRelation.value === relation) {
+        isSelectedRelationFromOptions = true;
+      }
+    })
+
+    return relation === "" ? false : !isSelectedRelationFromOptions
+  });
 
   function handleRelation(event) {
     let { type, name, value } = event.target;
@@ -110,7 +123,6 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
     });
 
     updateFormData({ referenceDetails: updatedReferenceDetails });
-    console.log(referenceDetails);
   }
 
   function deletePhoneNumber(deletedPhnId) {
@@ -126,7 +138,6 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
     });
 
     updateFormData({ referenceDetails: updatedReferenceDetails });
-    console.log(referenceDetails);
   }
 
   return (
@@ -168,6 +179,7 @@ function ReferenceDetailsLine({ id, name, phoneNumber, relation, deleteReference
                 options={relations}
                 handleChange={handleRelation}
                 errorObj={referenceDetailsError[`relation_${id}`]}
+                className='w-[240px]'
               />
             )
         }

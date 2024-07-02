@@ -1,8 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import InputText from "../../components/form/InputText";
 import { v4 as uuidv4 } from 'uuid';
 import { FormContext } from "../../context/FormContext";
 import WorkExpDropDown from "../../components/commonComponents/WorkExpDropDown";
+import { useParams } from "react-router-dom";
 
 function WorkExperience() {
   const { formData: { workExperiences }, formErrorData, updateFormData } = useContext(FormContext);
@@ -64,7 +65,8 @@ function WorkExperience() {
 export default WorkExperience;
 
 function WorkExperienceLine({ id, companyName, designation, from, to, skills, workExperiencesError, handleChange, deleteExperience }) {
-  const [isSkillSectionOpen, setIsSkillSectionOpen] = useState(false);
+  const { id: isUpdateForm } = useParams();
+  const [isSkillSectionOpen, setIsSkillSectionOpen] = useState(isUpdateForm ? true : false);
 
   const inputFields = [
     { name: "companyName", label: "Company Name", type: "text" },
@@ -94,7 +96,7 @@ function WorkExperienceLine({ id, companyName, designation, from, to, skills, wo
           <button className="hover:text-blue-600 h-fit m-auto" type="button" onClick={() => { deleteExperience(id) }}>
             delete
           </button>
-          <svg onClick={() => {setIsSkillSectionOpen((prev) => !prev)}} data-accordion-icon className={`${isSkillSectionOpen && 'rotate-0'} w-3 h-3 rotate-180 shrink-0 hover:text-blue-600`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <svg onClick={() => {setIsSkillSectionOpen((prev) => !prev)}} data-accordion-icon className={`${isSkillSectionOpen ? 'rotate-0' : 'rotate-180'} w-3 h-3 shrink-0 hover:text-blue-600`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5 5 1 1 5" />
           </svg>
       </div>
