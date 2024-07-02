@@ -36,7 +36,7 @@ const ReferenceDetails = lazy(() => import("./ReferenceDetails"));
 const Preferences = lazy(() => import("./Preferences"));
 
 function JobForm() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(5);
   const { id } = useParams();
   const { getDataById, addData, updateDataById } = useLocalStorage("users");
   const navigate = useNavigate();
