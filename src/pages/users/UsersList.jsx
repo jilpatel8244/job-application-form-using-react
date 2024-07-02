@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useAlert } from "../../context/AlertContext";
 
 function UsersList() {
-  const { storedData, removeDataById } = useLocalStorage("users");
+  const { data, removeDataById } = useLocalStorage("users");
   const Alert = useAlert();
 
   async function deleteHandler(id) {
@@ -46,7 +46,7 @@ function UsersList() {
               Add new application
             </Link>
           </div>
-          {storedData?.length ? (
+          {data?.length ? (
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
@@ -71,7 +71,7 @@ function UsersList() {
                 </tr>
               </thead>
               <tbody>
-                {storedData.map((user) => (
+                {data.map((user) => (
                   <tr
                     key={user.id}
                     className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
